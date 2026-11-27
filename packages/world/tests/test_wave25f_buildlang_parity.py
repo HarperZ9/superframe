@@ -156,14 +156,29 @@ def test_live_buildlang_native_binary_matches_cpp_and_python_zero_divergence() -
         "0x28cadd1bf99ef7cf",
         "0xfba75d3ca1ba5ca1",
         "0x2ba3846871f3701a",
+        "0x0b4c621d072ff134",
+        "0x4477974d58b7f8b3",
+        "0xcf3c2ef1a58b54b7",
+        "0xbd8268cb80d70739",
+        "0xc093c83f3628e436",
+        "0xce8d086fa30550d9",
+        "0x7e6d89e1bdc206b0",
+        "0xf449c65538876a32",
+        "0x1530d0d4a57b7e47",
+        "0x217f4000ac49695a",
+        "0xbd556d27b9d7c43a",
+        "0x3d1d72cd65bf012c",
+        "0x0ec9f05a5d1593ee",
+        "0x8f2237c505d64908",
+        "0x44af93a563af88da",
     ):
         assert expected_pin in main_src
     out = _run_native_bld_binary()
     if out is None:
         return
 
-    assert "modules identical to the C++: 24 of 24" in out
-    assert "planted controls rejected: 24 of 24" in out
+    assert "modules identical to the C++: 39 of 39" in out
+    assert "planted controls rejected: 39 of 39" in out
     assert "art metrics identities verified: 1 of 1" in out
     assert "parity invariants verified: 2 of 2" in out
 

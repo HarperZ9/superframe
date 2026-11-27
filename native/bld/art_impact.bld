@@ -1,0 +1,452 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Module #39: impact presentation (native/src/renderer/impact.cpp).
+// Dual-component combat ShakeCam (Hermite smoothstep keyed curves + 100 Hz symplectic
+// spring-damper recoil + 3 px telegraph / 6 px full-blow vector caps) and anti-aliased
+// RGB8 Canvas primitives (distance-field segments, discs, ribbons, hitmarkers, and
+// 4x4 MSAA even-odd ray-cast polygon rasterizer for annular smears and sawtooth bursts).
+
+struct M39Rgb { r: i32, g: i32, b: i32 }
+struct M39Pt { x: f64, y: f64 }
+
+struct M39Cam {
+    view_h: f64,
+    kick: f64,
+    tell_cap: i32,
+    key_stretch: f64,
+    has: i32,
+    tell: i32,
+    sf: f64,
+    samp: f64,
+    sd0: f64,
+    sd1: f64,
+    skeys: i32,
+    x0: f64,
+    x1: f64,
+    v0: f64,
+    v1: f64,
+    acc: f64,
+}
+
+struct M39Canvas {
+    w: i32,
+    h: i32,
+    rgb: Vec<i32>,
+}
+
+fn m39_pi() -> f64 { 3.14159265358979323846 }
+fn m39_rgb(r: i32, g: i32, b: i32) -> M39Rgb { M39Rgb { r: r, g: g, b: b } }
+fn m39_pt(x: f64, y: f64) -> M39Pt { M39Pt { x: x, y: y } }
+
+fn m39_mind(a: f64, b: f64) -> f64 { if a < b { return a; } b }
+fn m39_maxd(a: f64, b: f64) -> f64 { if a > b { return a; } b }
+fn m39_mini(a: i32, b: i32) -> i32 { if a < b { return a; } b }
+fn m39_maxi(a: i32, b: i32) -> i32 { if a > b { return a; } b }
+
+fn m39_clampd(x: f64, lo: f64, hi: f64) -> f64 {
+    if x < lo { return lo; }
+    if x > hi { return hi; }
+    x
+}
+
+fn m39_hypot(a: f64, b: f64) -> f64 { sqrt(a * a + b * b) }
+
+fn m39_fnv_start() -> u64 { 1469598103934665603 }
+
+fn m39_fnv_u8(h0: u64, b: u64) -> u64 {
+    let h: u64 = h0 ^ b;
+    h.wrapping_mul(1099511628211)
+}
+
+fn m39_fnv_u32(h0: u64, v: u32) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = m39_fnv_u8(h, ((v >> (8 * k)) & 255) as u64);
+        k = k + 1;
+    }
+    h
+}
+
+fn m39_fnv_u64(h0: u64, v: u64) -> u64 {
+    let lo: u32 = (v & 4294967295) as u32;
+    let hi: u32 = ((v >> 32) & 4294967295) as u32;
+    m39_fnv_u32(m39_fnv_u32(h0, lo), hi)
+}
+
+fn m39_fnv_f32(h0: u64, v: f64) -> u64 {
+    let b: u32 = (v as f32).to_bits();
+    m39_fnv_u32(h0, b)
+}
+
+fn m39_key_pair(keys: i32, idx: i32) -> (f64, f64) {
+    if keys == 0 {
+        if idx == 0 { return (0.0, 0.0); }
+        if idx == 1 { return (3.0, 1.0); }
+        if idx == 2 { return (7.5, -0.4); }
+        return (12.0, 0.0);
+    }
+    if keys == 1 {
+        if idx == 0 { return (0.0, 0.0); }
+        if idx == 1 { return (3.0, 1.0); }
+        if idx == 2 { return (8.0, -0.4); }
+        if idx == 3 { return (11.5, 0.12); }
+        return (15.0, 0.0);
+    }
+    if idx == 0 { return (0.0, 0.0); }
+    if idx == 1 { return (3.0, 1.0); }
+    if idx == 2 { return (10.0, -0.45); }
+    if idx == 3 { return (20.0, 0.25); }
+    if idx == 4 { return (30.0, -0.08); }
+    (40.0, 0.0)
+}
+
+fn m39_key_len(keys: i32) -> i32 {
+    if keys == 0 { return 4; }
+    if keys == 1 { return 5; }
+    6
+}
+
+fn m39_keyed(keys: i32, f: f64) -> (i32, f64) {
+    let n: i32 = m39_key_len(keys);
+    let (last_f, _last_v) = m39_key_pair(keys, n - 1);
+    if f >= last_f { return (0, 0.0); }
+    let mut i: i32 = 1;
+    while i < n {
+        let (f1, v1) = m39_key_pair(keys, i);
+        if f <= f1 {
+            let (f0, v0) = m39_key_pair(keys, i - 1);
+            let t: f64 = (f - f0) / (f1 - f0);
+            let s: f64 = t * t * (3.0 - 2.0 * t);
+            return (1, v0 + (v1 - v0) * s);
+        }
+        i = i + 1;
+    }
+    (1, 0.0)
+}
+
+fn m39_cam_new(tell_cap: i32) -> M39Cam {
+    M39Cam {
+        view_h: 1080.0, kick: 2.2, tell_cap: tell_cap, key_stretch: 1.0,
+        has: 0, tell: 0, sf: 0.0, samp: 0.0, sd0: 0.0, sd1: 0.0, skeys: 0,
+        x0: 0.0, x1: 0.0, v0: 0.0, v1: 0.0, acc: 0.0,
+    }
+}
+
+fn m39_cam_blow(cam: &mut M39Cam, amp_in: f64, is_catch: i32, dx: f64, dy: f64) {
+    let mut raw_amp: f64 = 0.2;
+    if amp_in != 0.0 { raw_amp = amp_in; }
+    let amp: f64 = m39_mind(1.0, raw_amp);
+    let a: f64 = pow(amp, 0.7);
+    let mut len: f64 = m39_hypot(dx, dy);
+    if len == 0.0 { len = 1.0; }
+    cam.sf = 0.0;
+    cam.samp = a * 6.0;
+    cam.sd0 = dx / len;
+    cam.sd1 = dy / len;
+    if is_catch != 0 {
+        cam.skeys = 2;
+    } else if amp >= 0.5 {
+        cam.skeys = 1;
+    } else {
+        cam.skeys = 0;
+    }
+    cam.has = 1;
+    cam.v0 = cam.v0 + cam.sd0 * a * 6.0 * cam.kick;
+    cam.v1 = cam.v1 + cam.sd1 * a * 6.0 * cam.kick;
+}
+
+fn m39_cam_tick(cam: &mut M39Cam, dt: f64) -> (f64, f64) {
+    let mut dx: f64 = 0.0;
+    let mut dy: f64 = 0.0;
+    let g: f64 = cam.view_h / 1080.0;
+    if cam.has != 0 {
+        cam.sf = cam.sf + dt * 60.0;
+        let (ok, k) = m39_keyed(cam.skeys, cam.sf / cam.key_stretch);
+        if ok == 0 {
+            cam.has = 0;
+        } else {
+            let v: f64 = cam.samp * g * k;
+            dx = cam.sd0 * v;
+            dy = cam.sd1 * v;
+        }
+    }
+    cam.acc = cam.acc + dt;
+    while cam.acc >= 0.01 {
+        let a0: f64 = -300.0 * cam.x0 - 30.0 * cam.v0;
+        cam.v0 = cam.v0 + a0 * 0.01;
+        cam.x0 = cam.x0 + cam.v0 * 0.01;
+        let a1: f64 = -300.0 * cam.x1 - 30.0 * cam.v1;
+        cam.v1 = cam.v1 + a1 * 0.01;
+        cam.x1 = cam.x1 + cam.v1 * 0.01;
+        cam.acc = cam.acc - 0.01;
+    }
+    if m39_hypot(cam.x0, cam.x1) > 0.05 || m39_hypot(cam.v0, cam.v1) > 0.5 {
+        dx = dx + cam.x0 * g;
+        dy = dy + cam.x1 * g;
+    } else {
+        cam.x0 = 0.0;
+        cam.x1 = 0.0;
+        cam.v0 = 0.0;
+        cam.v1 = 0.0;
+    }
+    let mut base_lim: f64 = 6.0;
+    if cam.tell != 0 && cam.tell_cap != 0 { base_lim = 3.0; }
+    let lim: f64 = base_lim * g;
+    let m: f64 = m39_hypot(dx, dy);
+    if m > lim {
+        dx = dx * (lim / m);
+        dy = dy * (lim / m);
+    }
+    (dx, dy)
+}
+
+fn m39_canvas_new(w: i32, h: i32, ground: M39Rgb) -> M39Canvas {
+    let mut rgb: Vec<i32> = Vec::new();
+    let total: i32 = w * h;
+    let mut i: i32 = 0;
+    while i < total {
+        rgb.push(ground.r);
+        rgb.push(ground.g);
+        rgb.push(ground.b);
+        i = i + 1;
+    }
+    M39Canvas { w: w, h: h, rgb: rgb }
+}
+
+fn m39_canvas_blend(cv: &mut M39Canvas, x: i32, y: i32, c: M39Rgb, a_in: f64) {
+    if x < 0 || y < 0 || x >= cv.w || y >= cv.h || a_in <= 0.0 { return; }
+    let a: f64 = m39_mind(1.0, a_in);
+    let idx: usize = ((y * cv.w + x) * 3) as usize;
+    let p0: f64 = cv.rgb[idx] as f64;
+    let p1: f64 = cv.rgb[idx + 1] as f64;
+    let p2: f64 = cv.rgb[idx + 2] as f64;
+    let n0: f64 = p0 + ((c.r as f64) - p0) * a;
+    let n1: f64 = p1 + ((c.g as f64) - p1) * a;
+    let n2: f64 = p2 + ((c.b as f64) - p2) * a;
+    cv.rgb[idx] = floor(n0 + 0.5) as i32;
+    cv.rgb[idx + 1] = floor(n1 + 0.5) as i32;
+    cv.rgb[idx + 2] = floor(n2 + 0.5) as i32;
+}
+
+fn m39_draw_segment(cv: &mut M39Canvas, x0: f64, y0: f64, x1: f64, y1: f64, hw: f64, c: M39Rgb, alpha: f64) {
+    let xa: i32 = m39_maxi(0, floor(m39_mind(x0, x1) - hw - 1.0) as i32);
+    let xb: i32 = m39_mini(cv.w - 1, ceil(m39_maxd(x0, x1) + hw + 1.0) as i32);
+    let ya: i32 = m39_maxi(0, floor(m39_mind(y0, y1) - hw - 1.0) as i32);
+    let yb: i32 = m39_mini(cv.h - 1, ceil(m39_maxd(y0, y1) + hw + 1.0) as i32);
+    let ux: f64 = x1 - x0;
+    let uy: f64 = y1 - y0;
+    let l2: f64 = ux * ux + uy * uy;
+
+    let mut y: i32 = ya;
+    while y <= yb {
+        let mut x: i32 = xa;
+        while x <= xb {
+            let px: f64 = (x as f64) + 0.5 - x0;
+            let py: f64 = (y as f64) + 0.5 - y0;
+            let mut t: f64 = 0.0;
+            if l2 > 0.0 { t = m39_clampd((px * ux + py * uy) / l2, 0.0, 1.0); }
+            let d: f64 = m39_hypot(px - t * ux, py - t * uy);
+            m39_canvas_blend(cv, x, y, c, alpha * m39_clampd(hw + 0.5 - d, 0.0, 1.0));
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+}
+
+fn m39_draw_disc(cv: &mut M39Canvas, x: f64, y: f64, r: f64, c: M39Rgb, alpha: f64) {
+    m39_draw_segment(cv, x, y, x, y, r, c, alpha);
+}
+
+fn m39_inside(pts: &Vec<M39Pt>, x: f64, y: f64) -> i32 {
+    let n: usize = pts.len();
+    let mut inside: i32 = 0;
+    let mut i: usize = 0;
+    let mut j: usize = n - 1;
+    while i < n {
+        let yi: f64 = pts[i].y;
+        let yj: f64 = pts[j].y;
+        let ci: i32 = if yi > y { 1 } else { 0 };
+        let cj: i32 = if yj > y { 1 } else { 0 };
+        if ci != cj {
+            let x_int: f64 = (pts[j].x - pts[i].x) * (y - yi) / (yj - yi) + pts[i].x;
+            if x < x_int { inside = 1 - inside; }
+        }
+        j = i;
+        i = i + 1;
+    }
+    inside
+}
+
+fn m39_fill_polygon(cv: &mut M39Canvas, pts: &Vec<M39Pt>, c: M39Rgb, alpha: f64) {
+    let n: usize = pts.len();
+    if n < 3 { return; }
+    let mut xa: f64 = 1.0e18;
+    let mut xb: f64 = -1.0e18;
+    let mut ya: f64 = 1.0e18;
+    let mut yb: f64 = -1.0e18;
+    let mut i: usize = 0;
+    while i < n {
+        xa = m39_mind(xa, pts[i].x);
+        xb = m39_maxd(xb, pts[i].x);
+        ya = m39_mind(ya, pts[i].y);
+        yb = m39_maxd(yb, pts[i].y);
+        i = i + 1;
+    }
+    let x0: i32 = m39_maxi(0, floor(xa) as i32);
+    let x1: i32 = m39_mini(cv.w - 1, ceil(xb) as i32);
+    let y0: i32 = m39_maxi(0, floor(ya) as i32);
+    let y1: i32 = m39_mini(cv.h - 1, ceil(yb) as i32);
+
+    let mut y: i32 = y0;
+    while y <= y1 {
+        let mut x: i32 = x0;
+        while x <= x1 {
+            let mut hits: i32 = 0;
+            let mut sy: i32 = 0;
+            while sy < 4 {
+                let mut sx: i32 = 0;
+                while sx < 4 {
+                    let qx: f64 = (x as f64) + ((sx as f64) + 0.5) / 4.0;
+                    let qy: f64 = (y as f64) + ((sy as f64) + 0.5) / 4.0;
+                    hits = hits + m39_inside(pts, qx, qy);
+                    sx = sx + 1;
+                }
+                sy = sy + 1;
+            }
+            if hits > 0 {
+                m39_canvas_blend(cv, x, y, c, alpha * (hits as f64) / 16.0);
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+}
+
+fn m39_draw_ribbon(cv: &mut M39Canvas, x0: f64, y0: f64, x1: f64, y1: f64, age: i32, life: i32, c: M39Rgb) {
+    let k: f64 = 1.0 - (age as f64) / (life as f64);
+    if k <= 0.0 { return; }
+    m39_draw_segment(cv, x0, y0, x1, y1, 1.5 + 7.0 * k, c, 0.25 + 0.65 * k);
+}
+
+fn m39_draw_smear(cv: &mut M39Canvas, cx: f64, cy: f64, a0: f64, a1: f64, r0: f64, r1: f64, c: M39Rgb, alpha: f64) {
+    let mut pts: Vec<M39Pt> = Vec::new();
+    let n: i32 = 16;
+    let mut i: i32 = 0;
+    while i <= n {
+        let a: f64 = a0 + (a1 - a0) * (i as f64) / (n as f64);
+        pts.push(m39_pt(cx + r1 * cos(a), cy + r1 * sin(a)));
+        i = i + 1;
+    }
+    i = n;
+    while i >= 0 {
+        let a: f64 = a0 + (a1 - a0) * (i as f64) / (n as f64);
+        pts.push(m39_pt(cx + r0 * cos(a), cy + r0 * sin(a)));
+        i = i - 1;
+    }
+    m39_fill_polygon(cv, &pts, c, alpha);
+}
+
+fn m39_draw_burst(cv: &mut M39Canvas, cx: f64, cy: f64, radius: f64, teeth: i32, spin: f64, age: i32, life: i32, c: M39Rgb) {
+    let t: f64 = (age as f64) / (life as f64);
+    if t >= 1.0 { return; }
+    let r_out: f64 = radius * (0.55 + 0.75 * t);
+    let r_in: f64 = r_out * (0.42 + 0.2 * t);
+    let step: f64 = m39_pi() / (teeth as f64);
+    let mut alpha: f64 = 1.0;
+    if t >= 0.5 { alpha = 1.0 - (t - 0.5) * 2.0; }
+    let mut pts: Vec<M39Pt> = Vec::new();
+    let mut i: i32 = 0;
+    while i < teeth {
+        let a: f64 = spin + 2.0 * (i as f64) * step;
+        pts.push(m39_pt(cx + r_out * cos(a + step * 0.7), cy + r_out * sin(a + step * 0.7)));
+        pts.push(m39_pt(cx + r_in * cos(a + step), cy + r_in * sin(a + step)));
+        pts.push(m39_pt(cx + r_in * cos(a + 2.0 * step), cy + r_in * sin(a + 2.0 * step)));
+        i = i + 1;
+    }
+    m39_fill_polygon(cv, &pts, c, alpha);
+}
+
+fn m39_draw_hitmarker(cv: &mut M39Canvas, cx: f64, cy: f64, size: f64, age: i32, life: i32, c: M39Rgb) {
+    let t: f64 = (age as f64) / (life as f64);
+    if t >= 1.0 { return; }
+    let mut a: f64 = 1.0;
+    if t >= 0.6 { a = 1.0 - (t - 0.6) / 0.4; }
+    let r0: f64 = size * (0.35 + 0.35 * t);
+    let r1: f64 = size * (0.75 + 0.35 * t);
+    let hw: f64 = m39_maxd(1.0, size * 0.06);
+    let pi: f64 = m39_pi();
+    let mut i: i32 = 0;
+    while i < 4 {
+        let ang: f64 = pi / 4.0 + (i as f64) * pi / 2.0;
+        let c0: f64 = cos(ang);
+        let s0: f64 = sin(ang);
+        m39_draw_segment(cv, cx + r0 * c0, cy + r0 * s0, cx + r1 * c0, cy + r1 * s0, hw, c, a);
+        i = i + 1;
+    }
+}
+
+fn m39_hash_canvas(cv: &M39Canvas) -> u64 {
+    let mut h: u64 = m39_fnv_start();
+    let n: usize = cv.rgb.len();
+    let mut i: usize = 0;
+    while i < n {
+        h = m39_fnv_u8(h, (cv.rgb[i] & 255) as u64);
+        i = i + 1;
+    }
+    h
+}
+
+fn m39_run_shakecam(tell_cap: i32) -> u64 {
+    let mut cam: M39Cam = m39_cam_new(tell_cap);
+    let mut h: u64 = m39_fnv_start();
+    let dt: f64 = 1.0 / 60.0;
+    let mut t: i32 = 0;
+    while t < 120 {
+        if t >= 55 && t < 80 { cam.tell = 1; } else { cam.tell = 0; }
+        if t == 0 { m39_cam_blow(&mut cam, 0.35, 0, 0.80, -0.60); }
+        if t == 25 { m39_cam_blow(&mut cam, 0.75, 0, -0.45, 0.90); }
+        if t == 55 { m39_cam_blow(&mut cam, 1.00, 1, 0.92, 0.38); }
+        if t == 95 { m39_cam_blow(&mut cam, 0.00, 0, 0.00, 0.00); }
+        let (dx, dy) = m39_cam_tick(&mut cam, dt);
+        let ox: f64 = dx + 10.0;
+        let oy: f64 = dy + 10.0;
+        h = m39_fnv_f32(h, ox);
+        h = m39_fnv_f32(h, oy);
+        t = t + 1;
+    }
+    h
+}
+
+pub fn run_impact_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let h_cam: u64 = m39_run_shakecam(1);
+    let h_ctrl: u64 = m39_run_shakecam(0);
+
+    let mut cv_rib: M39Canvas = m39_canvas_new(64, 48, m39_rgb(18, 22, 30));
+    m39_draw_ribbon(&mut cv_rib, 6.5, 38.0, 22.0, 28.0, 6, 10, m39_rgb(220, 120, 60));
+    m39_draw_ribbon(&mut cv_rib, 22.0, 28.0, 38.0, 19.0, 3, 10, m39_rgb(245, 175, 90));
+    m39_draw_ribbon(&mut cv_rib, 38.0, 19.0, 54.0, 12.0, 0, 10, m39_rgb(255, 235, 180));
+    m39_draw_disc(&mut cv_rib, 44.0, 18.0, 4.2, m39_rgb(255, 250, 220), 0.85);
+    m39_draw_hitmarker(&mut cv_rib, 44.0, 18.0, 14.0, 2, 10, m39_rgb(255, 90, 70));
+    m39_draw_hitmarker(&mut cv_rib, 24.0, 26.0, 10.0, 7, 10, m39_rgb(120, 220, 255));
+    let h_rib: u64 = m39_hash_canvas(&cv_rib);
+
+    let mut cv_smear: M39Canvas = m39_canvas_new(64, 48, m39_rgb(14, 16, 24));
+    m39_draw_smear(&mut cv_smear, 30.0, 26.0, -1.10, 0.85, 8.0, 22.0, m39_rgb(240, 210, 130), 0.78);
+    m39_draw_smear(&mut cv_smear, 34.0, 22.0, 1.60, 3.05, 5.0, 16.0, m39_rgb(110, 190, 255), 0.65);
+    let h_smear: u64 = m39_hash_canvas(&cv_smear);
+
+    let mut cv_burst: M39Canvas = m39_canvas_new(64, 48, m39_rgb(12, 14, 20));
+    m39_draw_burst(&mut cv_burst, 28.0, 24.0, 18.0, 9, 0.35, 2, 10, m39_rgb(255, 190, 60));
+    m39_draw_burst(&mut cv_burst, 42.0, 20.0, 13.0, 7, 1.15, 6, 10, m39_rgb(255, 95, 85));
+    let h_burst: u64 = m39_hash_canvas(&cv_burst);
+
+    let mut h_all: u64 = m39_fnv_start();
+    h_all = m39_fnv_u64(h_all, h_cam);
+    h_all = m39_fnv_u64(h_all, h_rib);
+    h_all = m39_fnv_u64(h_all, h_smear);
+    h_all = m39_fnv_u64(h_all, h_burst);
+
+    (h_cam, h_rib, h_smear, h_burst, h_all, h_ctrl)
+}

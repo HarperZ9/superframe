@@ -33,6 +33,21 @@ mod art_taa;
 mod art_gtao;
 mod art_ssr;
 mod art_purity;
+mod art_crt_signal;
+mod art_crt_glass;
+mod art_crt_beam;
+mod art_lens;
+mod art_sag;
+mod art_film_optics;
+mod art_oklab;
+mod art_hysteresis;
+mod art_fibre;
+mod art_palettelight;
+mod art_hatch;
+mod art_vhs;
+mod art_adjacency;
+mod art_iridescence;
+mod art_impact;
 mod wave25f_parity;
 
 fn main() ~ Console {
@@ -193,6 +208,60 @@ fn main() ~ Console {
     same = same + pur_ok;
     all = all + 1;
 
+    let (a25, b25, c25, d25, e25, all25, ctrl25) = art_crt_signal::run_crt_signal_parity();
+    same = same + kit::report("art_crt_signal", all25, 0x0b4c621d072ff134);
+    all = all + 1;
+    let (a26, b26, c26, all26, ctrl26) = art_crt_glass::run_crt_glass_parity();
+    same = same + kit::report("art_crt_glass", all26, 0x4477974d58b7f8b3);
+    all = all + 1;
+    let (a27, b27, c27, d27, all27, ctrl27) = art_crt_beam::run_crt_beam_parity();
+    same = same + kit::report("art_crt_beam", all27, 0xcf3c2ef1a58b54b7);
+    all = all + 1;
+    let (a28, b28, c28, d28, all28, ctrl28) = art_lens::run_lens_parity();
+    same = same + kit::report("art_lens", all28, 0xbd8268cb80d70739);
+    all = all + 1;
+    let (a29, b29, c29, d29, all29, ctrl29) = art_sag::run_sag_parity();
+    same = same + kit::report("art_sag", all29, 0xc093c83f3628e436);
+    all = all + 1;
+    let (a30, b30, c30, d30, all30, ctrl30) = art_film_optics::run_film_optics_parity();
+    same = same + kit::report("art_film_optics", all30, 0xce8d086fa30550d9);
+    all = all + 1;
+    let (a31, b31, c31, d31, all31, ctrl31) = art_oklab::run_oklab_parity();
+    same = same + kit::report("art_oklab", all31, 0x7e6d89e1bdc206b0);
+    all = all + 1;
+
+    let (a32, b32, c32, d32, all32, ctrl32) = art_hysteresis::run_hysteresis_parity();
+    same = same + kit::report("art_hysteresis", all32, 0xf449c65538876a32);
+    all = all + 1;
+
+    let (a33, b33, c33, d33, all33, ctrl33) = art_fibre::run_fibre_parity();
+    same = same + kit::report("art_fibre", all33, 0x1530d0d4a57b7e47);
+    all = all + 1;
+
+    let (a34, b34, c34, d34, all34, ctrl34) = art_palettelight::run_palettelight_parity();
+    same = same + kit::report("art_palettelight", all34, 0x217f4000ac49695a);
+    all = all + 1;
+
+    let (a35, b35, c35, d35, all35, ctrl35) = art_hatch::run_hatch_parity();
+    same = same + kit::report("art_hatch", all35, 0xbd556d27b9d7c43a);
+    all = all + 1;
+
+    let (a36, b36, c36, d36, all36, ctrl36) = art_vhs::run_vhs_parity();
+    same = same + kit::report("art_vhs", all36, 0x3d1d72cd65bf012c);
+    all = all + 1;
+
+    let (a37, b37, c37, d37, all37, ctrl37) = art_adjacency::run_adjacency_parity();
+    same = same + kit::report("art_adjacency", all37, 0x0ec9f05a5d1593ee);
+    all = all + 1;
+
+    let (a38, b38, c38, d38, all38, ctrl38) = art_iridescence::run_iridescence_parity();
+    same = same + kit::report("art_iridescence", all38, 0x8f2237c505d64908);
+    all = all + 1;
+
+    let (a39, b39, c39, d39, all39, ctrl39) = art_impact::run_impact_parity();
+    same = same + kit::report("art_impact", all39, 0x44af93a563af88da);
+    all = all + 1;
+
     // Controls: each module must reject a different frame or tiny parameter perturbation.
     let mut control: i32 = 0;
     if art_scene::lit_hash(1, 256, 144) != 0x8e70a9159d2007bf { control = 1; }
@@ -226,6 +295,21 @@ fn main() ~ Console {
     if art_purity::purity_control_hash() != pur_deg && art_purity::purity_control_hash() == 0x3785bd59637ac6f0 {
         planted = planted + 1;
     }
+    if ctrl25 == 0x97579159fc8e3725 && ctrl25 != b25 { planted = planted + 1; }
+    if ctrl26 == 0x7665885d1af7cc9e && ctrl26 != a26 { planted = planted + 1; }
+    if ctrl27 == 0x5ba1703db0c1f802 && ctrl27 != all27 { planted = planted + 1; }
+    if ctrl28 == 0xf3f6cfb7b9a247f8 && ctrl28 != all28 { planted = planted + 1; }
+    if ctrl29 == 0x8f819a0f0f39ca60 && ctrl29 != all29 { planted = planted + 1; }
+    if ctrl30 == 0xb7515e47cebfa6db && ctrl30 != all30 { planted = planted + 1; }
+    if ctrl31 == 0xb44dbd95ce83a7dc && ctrl31 != all31 { planted = planted + 1; }
+    if ctrl32 == 0x3845115209575ab3 && ctrl32 != b32 { planted = planted + 1; }
+    if ctrl33 == 0xec07674278f08bed && ctrl33 != d33 { planted = planted + 1; }
+    if ctrl34 == 0x905f4d9d3dec9356 && ctrl34 != b34 { planted = planted + 1; }
+    if ctrl35 == 0xe16f1810fdb6e6af && ctrl35 != a35 { planted = planted + 1; }
+    if ctrl36 == 0x3b2fac60919707e3 && ctrl36 != c36 { planted = planted + 1; }
+    if ctrl37 == 0xd800d72ca549c553 && ctrl37 != b37 { planted = planted + 1; }
+    if ctrl38 == 0x01468a0fee937d0a && ctrl38 != a38 { planted = planted + 1; }
+    if ctrl39 == 0x1a5789d12874b953 && ctrl39 != a39 { planted = planted + 1; }
     println!("planted controls rejected: {} of {}", planted, all);
 
     let metrics_ok: i32 = art_metrics::metrics_identities_ok();

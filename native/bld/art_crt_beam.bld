@@ -1,0 +1,572 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #27: Physical CRT Electron-Beam Deposition & Phosphor Persistence
+// Bit-exact 0-ULP port of native/src/renderer/style_crt_beam.cpp:
+// Abramowitz-Stegun erfAS + Gaussian beam spot mass, parabolic face projection + footprint +
+// rounded-corner faceAlpha, aperture-grille / slot-mask / delta dot-trio / pixel-locked masks,
+// Trinitron damper shadows, RGB convergence misregistration, and dual-exponential phosphor decay.
+
+
+pub struct M27BeamPlan {
+    n_sig: i32,
+    lines: i32,
+    out_w: i32,
+    out_h: i32,
+    mask_type: i32,
+    pixel_lock: bool,
+    interlace: bool,
+    mono: bool,
+    pitch: f64,
+    pitch_px: f64,
+    fill: f64,
+    slot_height: f64,
+    slot_gap: f64,
+    damper_width: f64,
+    damper0: f64,
+    damper1: f64,
+    mix: f64,
+    corner: f64,
+    rx: f64,
+    ry: f64,
+    cx: f64,
+    cy: f64,
+    contrast: f64,
+    brightness: f64,
+    gamma: f64,
+    spot_lo: f64,
+    spot_hi: f64,
+    spot_exp: f64,
+    conv_rx: f64,
+    conv_ry: f64,
+    conv_bx: f64,
+    conv_by: f64,
+    radial: f64,
+    face_w: f64,
+    face_h: f64,
+    raster_w: f64,
+    raster_h: f64,
+    line_mm: f64,
+    distance: f64,
+    view_w: f64,
+    view_h: f64,
+    field: f64,
+    decay: Vec<f64>,
+}
+
+fn m27_pi() -> f64 { 3.141592653589793 }
+
+fn m27_min_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn m27_max_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn m27_abs_d(x: f64) -> f64 {
+    if x < 0.0 { return -x; }
+    x
+}
+
+fn m27_min_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn m27_max_i(a: i32, b: i32) -> i32 {
+    if a < b { return b; }
+    a
+}
+
+fn m27_hypot2(x: f64, y: f64) -> f64 {
+    sqrt(x * x + y * y)
+}
+
+fn m27_mask_mean(p: &M27BeamPlan) -> f64 {
+    if p.mask_type == 1 {
+        return p.fill / 3.0;
+    }
+    if p.mask_type == 2 {
+        return (p.fill / 3.0) * (p.slot_height / (p.slot_height + p.slot_gap));
+    }
+    if p.mask_type == 3 {
+        let d: f64 = p.pitch / sqrt(3.0);
+        let r: f64 = (p.fill * d) / 2.0;
+        return (m27_pi() * r * r) / ((sqrt(3.0) / 2.0) * p.pitch * p.pitch);
+    }
+    1.0
+}
+
+pub fn m27_erf_as(x: f64) -> f64 {
+    let s: f64 = if x < 0.0 { -1.0 } else { 1.0 };
+    let a: f64 = m27_abs_d(x);
+    let t: f64 = 1.0 / (1.0 + 0.3275911 * a);
+    let p1: f64 = 1.061405429 * t - 1.453152027;
+    let p2: f64 = p1 * t + 1.421413741;
+    let p3: f64 = p2 * t - 0.284496736;
+    let p4: f64 = p3 * t + 0.254829592;
+    let y: f64 = 1.0 - p4 * t * exp(-a * a);
+    s * y
+}
+
+fn m27_gauss_mass(a: f64, b: f64, mu: f64, sigma: f64) -> f64 {
+    let k: f64 = 1.0 / (sigma * 1.4142135623730951);
+    0.5 * (m27_erf_as((b - mu) * k) - m27_erf_as((a - mu) * k))
+}
+
+fn m27_face_at(p: &M27BeamPlan, px: f64, py: f64) -> (f64, f64) {
+    let x: f64 = (px - (p.out_w as f64) / 2.0) * (p.view_w / (p.out_w as f64)) + p.cx;
+    let y: f64 = (py - (p.out_h as f64) / 2.0) * (p.view_h / (p.out_h as f64)) + p.cy;
+    let d: f64 = p.distance;
+    let a: f64 = (x * x) / (2.0 * p.rx) + (y * y) / (2.0 * p.ry);
+    let t: f64 = (2.0 * d) / (d + sqrt(m27_max_d(0.0, d * d - 4.0 * a * d)));
+    (t * x, t * y)
+}
+
+fn m27_footprint(p: &M27BeamPlan, px: i32, py: i32) -> (f64, f64, f64, f64) {
+    let pxf: f64 = px as f64;
+    let pyf: f64 = py as f64;
+    let (cx, cy) = m27_face_at(p, pxf + 0.5, pyf + 0.5);
+    let (xpx, xpy) = m27_face_at(p, pxf + 1.0, pyf + 0.5);
+    let (xmx, xmy) = m27_face_at(p, pxf, pyf + 0.5);
+    let (ypx, ypy) = m27_face_at(p, pxf + 0.5, pyf + 1.0);
+    let (ymx, ymy) = m27_face_at(p, pxf + 0.5, pyf);
+    let hx: f64 = 0.5 * (m27_abs_d(xpx - xmx) + m27_abs_d(ypx - ymx));
+    let hy: f64 = 0.5 * (m27_abs_d(xpy - xmy) + m27_abs_d(ypy - ymy));
+    (cx, cy, m27_max_d(hx, 1.0e-4), m27_max_d(hy, 1.0e-4))
+}
+
+fn m27_face_alpha(p: &M27BeamPlan, sx: f64, sy: f64, hx: f64, hy: f64) -> f64 {
+    let r: f64 = p.corner;
+    let qx: f64 = m27_abs_d(sx) - (p.face_w / 2.0 - r);
+    let qy: f64 = m27_abs_d(sy) - (p.face_h / 2.0 - r);
+    let ox: f64 = m27_max_d(qx, 0.0);
+    let oy: f64 = m27_max_d(qy, 0.0);
+    let d: f64 = m27_hypot2(ox, oy) + m27_min_d(m27_max_d(qx, qy), 0.0) - r;
+    m27_min_d(1.0, m27_max_d(0.0, 0.5 - d / (2.0 * m27_max_d(hx, hy))))
+}
+
+fn m27_tent_cdf(u: f64, a: f64) -> f64 {
+    let v: f64 = u / a;
+    if v <= -1.0 { return 0.0; }
+    if v <= 0.0 { return 0.5 * (1.0 + v) * (1.0 + v); }
+    if v < 1.0 { return 1.0 - 0.5 * (1.0 - v) * (1.0 - v); }
+    1.0
+}
+
+fn m27_pulse_f(x: f64, period: f64, w: f64) -> f64 {
+    let fl: f64 = floor(x / period);
+    fl * w + m27_min_d(m27_max_d(x - fl * period, 0.0), w)
+}
+
+fn m27_pulse_box(y0: f64, y1: f64, period: f64, w: f64, s: f64) -> f64 {
+    let n0: f64 = floor((y0 - s) / period);
+    let a: f64 = y0 - s - n0 * period;
+    let b: f64 = y1 - s - n0 * period;
+    (m27_pulse_f(b, period, w) - m27_pulse_f(a, period, w)) / (y1 - y0)
+}
+
+fn m27_dampen(p: &M27BeamPlan, cov0: f64, sy: f64, hy: f64) -> f64 {
+    if p.mask_type != 1 { return cov0; }
+    let mut cov: f64 = cov0;
+    let dc0: f64 = (p.damper0 - 0.5) * p.face_h;
+    let lo0: f64 = m27_max_d(sy - hy, dc0 - p.damper_width / 2.0);
+    let hi0: f64 = m27_min_d(sy + hy, dc0 + p.damper_width / 2.0);
+    if hi0 > lo0 { cov = cov * (1.0 - (hi0 - lo0) / (2.0 * hy)); }
+    let dc1: f64 = (p.damper1 - 0.5) * p.face_h;
+    let lo1: f64 = m27_max_d(sy - hy, dc1 - p.damper_width / 2.0);
+    let hi1: f64 = m27_min_d(sy + hy, dc1 + p.damper_width / 2.0);
+    if hi1 > lo1 { cov = cov * (1.0 - (hi1 - lo1) / (2.0 * hy)); }
+    cov
+}
+
+fn m27_stripe_mask(p: &M27BeamPlan, sx: f64, sy: f64, hx: f64, hy: f64, c: i32) -> f64 {
+    let period: f64 = p.pitch;
+    let w: f64 = (p.fill * period) / 3.0;
+    let s: f64 = ((c as f64) * period) / 3.0 + ((1.0 - p.fill) * period) / 6.0;
+    let a: f64 = 2.0 * hx;
+    let m0: f64 = floor((sx - a - s - w) / period);
+    let m1: f64 = floor((sx + a - s) / period);
+    if m1 - m0 > 32.0 {
+        return m27_mask_mean(p) * 1.0;
+    }
+    let mut cov: f64 = 0.0;
+    let mut k: i64 = m0 as i64;
+    let k_end: i64 = m1 as i64;
+    while k <= k_end {
+        let x0: f64 = (k as f64) * period + s - sx;
+        let xw: f64 = m27_tent_cdf(x0 + w, a) - m27_tent_cdf(x0, a);
+        if xw > 0.0 {
+            let mut yw: f64 = 1.0;
+            if p.mask_type == 2 {
+                let py_per: f64 = p.slot_height + p.slot_gap;
+                let odd: f64 = (k & 1) as f64;
+                yw = m27_pulse_box(sy - hy, sy + hy, py_per, p.slot_height, odd * py_per * 0.5);
+            }
+            cov = cov + xw * yw;
+        }
+        k = k + 1;
+    }
+    m27_dampen(p, cov, sy, hy)
+}
+
+fn m27_delta_mask(p: &M27BeamPlan, sx: f64, sy: f64, hx: f64, hy: f64) -> (f64, f64, f64) {
+    let d: f64 = p.pitch / sqrt(3.0);
+    let r: f64 = (p.fill * d) / 2.0;
+    let row_h: f64 = (d * sqrt(3.0)) / 2.0;
+    let mut o0: f64 = 0.0;
+    let mut o1: f64 = 0.0;
+    let mut o2: f64 = 0.0;
+    let aa: f64 = m27_min_d(0.75 * (hx + hy), r);
+    let mut j: i32 = 0;
+    while j < 4 {
+        let mut i: i32 = 0;
+        while i < 4 {
+            let x: f64 = sx + (((i as f64) + 0.5) / 4.0 - 0.5) * 3.0 * hx;
+            let y: f64 = sy + (((j as f64) + 0.5) / 4.0 - 0.5) * 3.0 * hy;
+            let lj: i64 = floor(y / row_h) as i64;
+            let mut dj: i64 = 0;
+            while dj <= 1 {
+                let jj: i64 = lj + dj;
+                let li: i64 = floor(x / d - (jj as f64) / 2.0) as i64;
+                let mut di: i64 = 0;
+                while di <= 1 {
+                    let ii: i64 = li + di;
+                    let cx: f64 = ((ii as f64) + (jj as f64) / 2.0) * d;
+                    let cy: f64 = (jj as f64) * row_h;
+                    let e: f64 = m27_min_d(1.0, m27_max_d(0.0, 0.5 + (r - m27_hypot2(x - cx, y - cy)) / aa));
+                    if e > 0.0 {
+                        let ch: i64 = (((ii - jj) % 3) + 3) % 3;
+                        if ch == 0 { o0 = o0 + e / 16.0; }
+                        else if ch == 1 { o1 = o1 + e / 16.0; }
+                        else { o2 = o2 + e / 16.0; }
+                    }
+                    di = di + 1;
+                }
+                dj = dj + 1;
+            }
+            i = i + 1;
+        }
+        j = j + 1;
+    }
+    let t: f64 = m27_min_d(1.0, m27_max_d(0.0, (hx / p.pitch - 0.7) / 0.3));
+    let b: f64 = t * t * (3.0 - 2.0 * t);
+    let mean: f64 = m27_mask_mean(p);
+    (o0 + (mean - o0) * b, o1 + (mean - o1) * b, o2 + (mean - o2) * b)
+}
+
+fn m27_pixel_stripe_mask(p: &M27BeamPlan, px: i32, py: i32, sy: f64, hy: f64, c: i32) -> f64 {
+    let period: f64 = p.pitch_px;
+    let w: f64 = (p.fill * period) / 3.0;
+    let s: f64 = ((c as f64) * period) / 3.0 + ((1.0 - p.fill) * period) / 6.0;
+    let pxf: f64 = px as f64;
+    let pyf: f64 = py as f64;
+    let k0: i64 = floor((pxf - s - w) / period) as i64;
+    let k1: i64 = floor((pxf + 1.0 - s) / period) as i64;
+    let mut cov: f64 = 0.0;
+    let mut k: i64 = k0;
+    while k <= k1 {
+        let x0: f64 = m27_max_d(pxf, (k as f64) * period + s);
+        let x1: f64 = m27_min_d(pxf + 1.0, (k as f64) * period + s + w);
+        if x1 > x0 {
+            let mut yw: f64 = 1.0;
+            if p.mask_type == 2 {
+                let u: f64 = period / p.pitch;
+                let py_per: f64 = (p.slot_height + p.slot_gap) * u;
+                let odd: f64 = (k & 1) as f64;
+                yw = m27_pulse_box(pyf, pyf + 1.0, py_per, p.slot_height * u, odd * py_per * 0.5);
+            }
+            cov = cov + (x1 - x0) * yw;
+        }
+        k = k + 1;
+    }
+    m27_dampen(p, cov, sy, hy)
+}
+
+fn m27_mask_cover(p: &M27BeamPlan, sx: f64, sy: f64, hx: f64, hy: f64, px: i32, py: i32) -> (f64, f64, f64) {
+    if p.mask_type == 0 || p.mono {
+        return (1.0, 1.0, 1.0);
+    }
+    let mean: f64 = m27_mask_mean(p);
+    let mix: f64 = p.mix;
+    let locked: bool = p.pixel_lock && p.mask_type != 3;
+    let mut c0: f64 = 0.0;
+    let mut c1: f64 = 0.0;
+    let mut c2: f64 = 0.0;
+    if p.mask_type == 3 {
+        let (d0, d1, d2) = m27_delta_mask(p, sx, sy, hx, hy);
+        c0 = d0; c1 = d1; c2 = d2;
+    } else if locked {
+        c0 = m27_pixel_stripe_mask(p, px, py, sy, hy, 0);
+        c1 = m27_pixel_stripe_mask(p, px, py, sy, hy, 1);
+        c2 = m27_pixel_stripe_mask(p, px, py, sy, hy, 2);
+    } else {
+        c0 = m27_stripe_mask(p, sx, sy, hx, hy, 0);
+        c1 = m27_stripe_mask(p, sx, sy, hx, hy, 1);
+        c2 = m27_stripe_mask(p, sx, sy, hx, hy, 2);
+    }
+    (
+        1.0 - mix + (mix * c0) / mean,
+        1.0 - mix + (mix * c1) / mean,
+        1.0 - mix + (mix * c2) / mean,
+    )
+}
+
+fn m27_gun_current(p: &M27BeamPlan, v: f64) -> f64 {
+    let x: f64 = m27_max_d(p.contrast * v + p.brightness, 0.0);
+    pow(x, p.gamma)
+}
+
+fn m27_spot_sigma(p: &M27BeamPlan, cur: f64) -> f64 {
+    p.line_mm * (p.spot_lo + (p.spot_hi - p.spot_lo) * pow(m27_min_d(cur, 1.5), p.spot_exp))
+}
+
+fn m27_convergence(p: &M27BeamPlan, c: i32, sx: f64, sy: f64) -> (f64, f64) {
+    let k: f64 = p.radial / (p.face_w / 2.0);
+    if c == 0 { return (p.conv_rx + k * sx, p.conv_ry + k * sy); }
+    if c == 2 { return (p.conv_bx - k * sx, p.conv_by - k * sy); }
+    (0.0, 0.0)
+}
+
+fn m27_drive(p: &M27BeamPlan, sig: &Vec<f32>, c: i32, j: i32, k: i32) -> f64 {
+    let i: i32 = (j * p.n_sig + k) * 4;
+    if p.mono {
+        return 0.299 * (sig[i] as f64) + 0.587 * (sig[i + 1] as f64) + 0.114 * (sig[i + 2] as f64);
+    }
+    sig[i + c] as f64
+}
+
+fn m27_deposit(p: &M27BeamPlan, sig: &Vec<f32>, c: i32, rx: f64, ry: f64, hx: f64, hy: f64, fld: i32) -> f64 {
+    let n_sig: i32 = p.n_sig;
+    let lines: i32 = p.lines;
+    let line_mm: f64 = p.line_mm;
+    let raster_w: f64 = p.raster_w;
+    let raster_h: f64 = p.raster_h;
+    let dx: f64 = raster_w / (n_sig as f64);
+    let smax: f64 = m27_spot_sigma(p, 1.5);
+    let reach_y: f64 = 3.0 * smax + hy;
+    let reach_x: f64 = 3.0 * smax + hx;
+    let yl: f64 = (ry + raster_h / 2.0) / line_mm - 0.5;
+    let j0: i32 = m27_max_i(0, floor(yl - reach_y / line_mm) as i32);
+    let j1: i32 = m27_min_i(lines - 1, ceil(yl + reach_y / line_mm) as i32);
+    let kc: f64 = (rx + raster_w / 2.0) / dx - 0.5;
+    let k0: i32 = m27_max_i(0, floor(kc - reach_x / dx) as i32);
+    let k1: i32 = m27_min_i(n_sig - 1, ceil(kc + reach_x / dx) as i32);
+    let mut e: f64 = 0.0;
+    let mut j: i32 = j0;
+    while j <= j1 {
+        if !(p.interlace && ((j & 1) != (fld & 1))) {
+            let yj: f64 = -raster_h / 2.0 + ((j as f64) + 0.5) * line_mm;
+            let mut k: i32 = k0;
+            while k <= k1 {
+                let cur: f64 = m27_gun_current(p, m27_drive(p, sig, c, j, k));
+                if cur > 0.0 {
+                    let s: f64 = m27_spot_sigma(p, cur);
+                    let xk: f64 = -raster_w / 2.0 + ((k as f64) + 0.5) * dx;
+                    let gx: f64 = m27_gauss_mass(rx - hx, rx + hx, xk, s);
+                    let gy: f64 = m27_gauss_mass(ry - hy, ry + hy, yj, s);
+                    e = e + cur * gx * gy;
+                }
+                k = k + 1;
+            }
+        }
+        j = j + 1;
+    }
+    (e * dx * line_mm) / (4.0 * hx * hy)
+}
+
+pub fn m27_crt_beam(p: &M27BeamPlan, sig: &Vec<f32>, hist: &mut Vec<f32>, fld: i32) -> Vec<f32> {
+    let w: i32 = p.out_w;
+    let h: i32 = p.out_h;
+    let mut em: Vec<f32> = Vec::new();
+    let total: i32 = w * h * 4;
+    let mut z: i32 = 0;
+    while z < total {
+        em.push(0.0 as f32);
+        z = z + 1;
+    }
+    let big_t: f64 = p.field;
+    let mut py: i32 = 0;
+    while py < h {
+        let mut px: i32 = 0;
+        while px < w {
+            let (sx, sy, hx, hy) = m27_footprint(p, px, py);
+            let i: i32 = (py * w + px) * 4;
+            let hi: i32 = (py * w + px) * 8;
+            let alpha: f64 = m27_face_alpha(p, sx, sy, hx, hy);
+            em[i + 3] = alpha as f32;
+            let (cv0, cv1, cv2) = m27_mask_cover(p, sx, sy, hx, hy, px, py);
+            let t0: f64 = m27_min_d(1.0, m27_max_d(0.0, (sy + p.raster_h / 2.0) / p.raster_h)) * big_t;
+            let lit: bool = alpha > 0.0
+                && m27_abs_d(sx) < p.raster_w / 2.0 + 3.0 * hx
+                && m27_abs_d(sy) < p.raster_h / 2.0 + 3.0 * hy;
+            let mono_val: f64 = if p.mono && lit { m27_deposit(p, sig, 0, sx, sy, hx, hy, fld) } else { 0.0 };
+            let mut c: i32 = 0;
+            while c < 3 {
+                let cov_c: f64 = if c == 0 { cv0 } else if c == 1 { cv1 } else { cv2 };
+                let mut e_val: f64 = 0.0;
+                if lit && p.mono {
+                    e_val = mono_val * cov_c;
+                } else if lit {
+                    let (ox, oy) = m27_convergence(p, c, sx, sy);
+                    e_val = m27_deposit(p, sig, c, sx - ox, sy - oy, hx, hy, fld) * cov_c;
+                }
+                let base: i32 = c * 5;
+                let w1: f64 = p.decay[base];
+                let e1: f64 = p.decay[base + 1];
+                let e2: f64 = p.decay[base + 2];
+                let t1: f64 = p.decay[base + 3];
+                let t2: f64 = p.decay[base + 4];
+                let n1: f64 = exp(-(big_t - t0) / t1);
+                let n2: f64 = exp(-(big_t - t0) / t2);
+                let r1: f64 = hist[hi + c] as f64;
+                let r2: f64 = hist[hi + 4 + c] as f64;
+                let em_out: f64 = r1 * (1.0 - e1) + r2 * (1.0 - e2)
+                    + e_val * (w1 * (1.0 - n1) + (1.0 - w1) * (1.0 - n2));
+                let h1_out: f64 = r1 * e1 + e_val * w1 * n1;
+                let h2_out: f64 = r2 * e2 + e_val * (1.0 - w1) * n2;
+                em[i + c] = em_out as f32;
+                hist[hi + c] = h1_out as f32;
+                hist[hi + 4 + c] = h2_out as f32;
+                c = c + 1;
+            }
+            px = px + 1;
+        }
+        py = py + 1;
+    }
+    em
+}
+
+fn m27_make_plan(n_sig: i32, lines: i32, out_w: i32, out_h: i32, mask_type: i32,
+                 pixel_lock: bool, interlace: bool, radial: f64, conv_rx: f64) -> M27BeamPlan {
+    let face_w: f64 = 406.4;
+    let face_h: f64 = 304.8;
+    let raster_w: f64 = face_w * 1.04;
+    let raster_h: f64 = face_h * 1.04;
+    let line_mm: f64 = raster_h / (lines as f64);
+    let dist: f64 = 4.0 * face_h;
+    let view_w: f64 = face_w * 1.08;
+    let view_h: f64 = view_w * ((out_h as f64) / (out_w as f64));
+    let fld_t: f64 = 1.0 / 59.94;
+    let mut decay: Vec<f64> = Vec::new();
+    decay.push(0.82); decay.push(exp(-fld_t / 0.0012)); decay.push(exp(-fld_t / 0.0180));
+    decay.push(0.0012); decay.push(0.0180);
+    decay.push(0.78); decay.push(exp(-fld_t / 0.0018)); decay.push(exp(-fld_t / 0.0240));
+    decay.push(0.0018); decay.push(0.0240);
+    decay.push(0.88); decay.push(exp(-fld_t / 0.0009)); decay.push(exp(-fld_t / 0.0140));
+    decay.push(0.0009); decay.push(0.0140);
+    let pitch: f64 = if mask_type == 2 { 22.0 } else if mask_type == 3 { 18.0 } else { 14.0 };
+    let fill: f64 = if mask_type == 3 { 0.80 } else { 0.85 };
+    let rx: f64 = if mask_type == 1 { 1600.0 } else { 810.0 };
+    let ry: f64 = if mask_type == 1 { 1.0e9 } else { 810.0 };
+    M27BeamPlan {
+        n_sig: n_sig, lines: lines, out_w: out_w, out_h: out_h,
+        mask_type: mask_type, pixel_lock: pixel_lock, interlace: interlace, mono: false,
+        pitch: pitch, pitch_px: 3.0, fill: fill, slot_height: 20.0, slot_gap: 4.5,
+        damper_width: 0.35, damper0: 1.0 / 3.0, damper1: 2.0 / 3.0, mix: 0.85, corner: 18.0,
+        rx: rx, ry: ry, cx: 0.0, cy: 0.0,
+        contrast: 1.05, brightness: 0.02, gamma: 2.4, spot_lo: 0.18, spot_hi: 0.38, spot_exp: 0.5,
+        conv_rx: conv_rx, conv_ry: 0.0, conv_bx: -0.5 * conv_rx, conv_by: 0.0, radial: radial,
+        face_w: face_w, face_h: face_h, raster_w: raster_w, raster_h: raster_h,
+        line_mm: line_mm, distance: dist, view_w: view_w, view_h: view_h, field: fld_t,
+        decay: decay,
+    }
+}
+
+fn m27_make_sig(n_sig: i32, lines: i32, phase: i32) -> Vec<f32> {
+    let mut sig: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < lines {
+        let mut x: i32 = 0;
+        while x < n_sig {
+            let bar: i32 = ((x + phase * 3) * 5) / n_sig;
+            let mut r: f64 = 0.15 + 0.75 * ((x as f64) / (n_sig as f64));
+            let mut g: f64 = 0.10 + 0.80 * ((y as f64) / (lines as f64));
+            let mut b: f64 = 0.85 - 0.65 * ((x as f64) / (n_sig as f64));
+            if (bar % 5) == 0 { r = 0.94; g = 0.16; b = 0.12; }
+            else if (bar % 5) == 1 { r = 0.14; g = 0.90; b = 0.20; }
+            else if (bar % 5) == 2 { r = 0.18; g = 0.24; b = 0.95; }
+            if ((x + y) % 5) == 0 { r = r * 0.4; g = g * 0.6; b = b * 0.5; }
+            sig.push(r as f32);
+            sig.push(g as f32);
+            sig.push(b as f32);
+            sig.push(1.0 as f32);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    sig
+}
+
+fn m27_zero_hist(out_w: i32, out_h: i32) -> Vec<f32> {
+    let mut h: Vec<f32> = Vec::new();
+    let n: i32 = out_w * out_h * 8;
+    let mut i: i32 = 0;
+    while i < n {
+        h.push(0.0 as f32);
+        i = i + 1;
+    }
+    h
+}
+
+fn m27_hash_f32_vec(v: &Vec<f32>, h0: u64) -> u64 {
+    let n: i32 = v.len() as i32;
+    let mut h: u64 = h0;
+    let mut i: i32 = 0;
+    while i < n {
+        h = kit::fnv_f32(h, v[i] as f64);
+        i = i + 1;
+    }
+    h
+}
+
+pub fn run_crt_beam_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let n_sig: i32 = 24;
+    let lines: i32 = 16;
+    let out_w: i32 = 24;
+    let out_h: i32 = 18;
+    let sig0: Vec<f32> = m27_make_sig(n_sig, lines, 0);
+    let sig1: Vec<f32> = m27_make_sig(n_sig, lines, 1);
+
+    let pl_grille: M27BeamPlan = m27_make_plan(n_sig, lines, out_w, out_h, 1, false, false, 0.0, 0.0);
+    let pl_slot: M27BeamPlan = m27_make_plan(n_sig, lines, out_w, out_h, 2, false, false, 0.0, 0.0);
+    let pl_delta: M27BeamPlan = m27_make_plan(n_sig, lines, out_w, out_h, 3, false, false, 0.0, 0.0);
+    let pl_lock: M27BeamPlan = m27_make_plan(n_sig, lines, out_w, out_h, 1, true, true, 0.0, 0.0);
+    let pl_ctrl: M27BeamPlan = m27_make_plan(n_sig, lines, out_w, out_h, 1, false, false, 0.8, 0.6);
+
+    let mut hist_g: Vec<f32> = m27_zero_hist(out_w, out_h);
+    let em_g0: Vec<f32> = m27_crt_beam(&pl_grille, &sig0, &mut hist_g, 0);
+    let em_g1: Vec<f32> = m27_crt_beam(&pl_grille, &sig1, &mut hist_g, 1);
+
+    let mut hist_s: Vec<f32> = m27_zero_hist(out_w, out_h);
+    let em_s: Vec<f32> = m27_crt_beam(&pl_slot, &sig0, &mut hist_s, 0);
+
+    let mut hist_d: Vec<f32> = m27_zero_hist(out_w, out_h);
+    let em_d: Vec<f32> = m27_crt_beam(&pl_delta, &sig0, &mut hist_d, 0);
+
+    let mut hist_l: Vec<f32> = m27_zero_hist(out_w, out_h);
+    let em_l: Vec<f32> = m27_crt_beam(&pl_lock, &sig1, &mut hist_l, 1);
+
+    let mut hist_c: Vec<f32> = m27_zero_hist(out_w, out_h);
+    let em_c0: Vec<f32> = m27_crt_beam(&pl_ctrl, &sig0, &mut hist_c, 0);
+    let em_c1: Vec<f32> = m27_crt_beam(&pl_ctrl, &sig1, &mut hist_c, 1);
+
+    let h_grille: u64 = m27_hash_f32_vec(&hist_g, m27_hash_f32_vec(&em_g1, m27_hash_f32_vec(&em_g0, kit::fnv_start())));
+    let h_slot: u64 = m27_hash_f32_vec(&em_s, kit::fnv_start());
+    let h_delta: u64 = m27_hash_f32_vec(&em_d, kit::fnv_start());
+    let h_lock: u64 = m27_hash_f32_vec(&em_l, kit::fnv_start());
+    let h_ctrl: u64 = m27_hash_f32_vec(&hist_c, m27_hash_f32_vec(&em_c1, m27_hash_f32_vec(&em_c0, kit::fnv_start())));
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m27_hash_f32_vec(&em_g0, h_all);
+    h_all = m27_hash_f32_vec(&em_g1, h_all);
+    h_all = m27_hash_f32_vec(&hist_g, h_all);
+    h_all = m27_hash_f32_vec(&em_s, h_all);
+    h_all = m27_hash_f32_vec(&em_d, h_all);
+    h_all = m27_hash_f32_vec(&em_l, h_all);
+
+    (h_grille, h_slot, h_delta, h_lock, h_all, h_ctrl)
+}

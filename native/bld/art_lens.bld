@@ -1,0 +1,791 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #28: Physical Camera Lens Optics, Coating, & Flare Pipeline
+// Bit-exact 0-ULP port of native/src/renderer/style_lens.cpp and style_lens_plan.cpp:
+// SCHOTT N-BK7/N-SF2 Sellmeier dispersion, 3-element Cooke triplet paraxial ghost matrix table
+// (15 pairs x 8 wavelengths), Airy thin-film MgF2 anti-reflective coating reflectance, polygonal
+// iris quadrature, bright-tile source extraction, lateral CA, anamorphic streak, veiling halo,
+// starburst diffraction lookup, and polygonal iris ghosting.
+
+
+pub struct M28GhostTable {
+    f: f64,
+    bfd: f64,
+    n_pairs: i32,
+    m: Vec<f64>,
+    rho: Vec<f64>,
+}
+
+pub struct M28LensPlan {
+    w: i32,
+    h: i32,
+    tile: i32,
+    max_sources: i32,
+    threshold: f64,
+    f_number: f64,
+    sensor_half_diag: f64,
+    ghost_gain: f64,
+    min_ghost_px: f64,
+    squeeze: f64,
+    streak_gain: f64,
+    streak_len: f64,
+    streak_thick: f64,
+    streak_angle: f64,
+    star_gain: f64,
+    halo_gain: f64,
+    halo_radius: f64,
+    ca_amount: f64,
+    coat_n1: f64,
+    coat_q: f64,
+    coat_ns: f64,
+    iris_blades: i32,
+    iris_round: f64,
+    iris_rot: f64,
+    diag_half: f64,
+    cx: f64,
+    cy: f64,
+    tan_half: f64,
+    r_bar: f64,
+    star_cell: f64,
+    star_m: i32,
+    n_ghosts: i32,
+    ghosts: Vec<f64>,
+    r0: Vec<f64>,
+    ca_scale: Vec<f64>,
+    halo_g: Vec<f64>,
+    halo_r: Vec<f64>,
+    phi: Vec<f64>,
+    bin_rgb: Vec<f64>,
+    star_data: Vec<f64>,
+}
+
+fn m28_pi() -> f64 { 3.141592653589793 }
+
+fn m28_min_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn m28_max_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn m28_abs_d(x: f64) -> f64 {
+    if x < 0.0 { return -x; }
+    x
+}
+
+fn m28_min_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn m28_hypot2(x: f64, y: f64) -> f64 {
+    sqrt(x * x + y * y)
+}
+
+fn m28_fmod(x: f64, y: f64) -> f64 {
+    let q: f64 = x / y;
+    let t: f64 = if q < 0.0 { ceil(q) } else { floor(q) };
+    x - t * y
+}
+
+fn m28_bin_nm(l: i32) -> f64 { 420.0 + 40.0 * (l as f64) }
+
+fn m28_glass_index(kind: i32, nm: f64) -> f64 {
+    // 0 = Air, 1 = N-BK7 Crown, 2 = N-SF2 Flint
+    if kind == 0 { return 1.0; }
+    let l2: f64 = (nm / 1000.0) * (nm / 1000.0);
+    if kind == 1 {
+        let s: f64 = 1.0
+            + (1.03961212 * l2) / (l2 - 0.00600069867)
+            + (0.231792344 * l2) / (l2 - 0.0200179144)
+            + (1.01046945 * l2) / (l2 - 103.560653);
+        return sqrt(s);
+    }
+    let s: f64 = 1.0
+        + (1.47343127 * l2) / (l2 - 0.0109019098)
+        + (0.163681849 * l2) / (l2 - 0.0585683687)
+        + (1.36920899 * l2) / (l2 - 127.404933);
+    sqrt(s)
+}
+
+fn m28_surf_r(k: i32) -> f64 {
+    if k == 0 { return 14.2; }
+    if k == 1 { return -288.4; }
+    if k == 2 { return -29.7; }
+    if k == 3 { return 43.9; }
+    if k == 4 { return 80.1; }
+    -42.8
+}
+
+fn m28_surf_t(k: i32) -> f64 {
+    if k == 0 { return 3.5; }
+    if k == 1 { return 4.0; }
+    if k == 2 { return 1.5; }
+    if k == 3 { return 2.4; }
+    if k == 4 { return 3.0; }
+    0.0
+}
+
+fn m28_surf_glass(k: i32) -> i32 {
+    if k == 0 { return 1; }
+    if k == 2 { return 2; }
+    if k == 4 { return 1; }
+    0
+}
+
+fn m28_idx(k: i32, nm: f64) -> f64 {
+    if k < 0 { return 1.0; }
+    m28_glass_index(m28_surf_glass(k), nm)
+}
+
+fn m28_cv(k: i32) -> f64 { 1.0 / m28_surf_r(k) }
+
+fn m28_tr(y: f64, u: f64, d: f64, n: f64) -> (f64, f64) {
+    (y + (d * u) / n, u)
+}
+
+fn m28_sf(y: f64, u: f64, c: f64, n: f64, n2: f64) -> (f64, f64) {
+    (y, u - y * (n2 - n) * c)
+}
+
+fn m28_to_stop(nm: f64, y0: f64, u0: f64) -> f64 {
+    let mut y: f64 = y0;
+    let mut u: f64 = u0;
+    let mut k: i32 = 0;
+    while k <= 3 {
+        let (y1, u1) = m28_sf(y, u, m28_cv(k), m28_idx(k - 1, nm), m28_idx(k, nm));
+        let dt: f64 = if k == 3 { 1.2 } else { m28_surf_t(k) };
+        let (y2, u2) = m28_tr(y1, u1, dt, m28_idx(k, nm));
+        y = y2; u = u2;
+        k = k + 1;
+    }
+    y
+}
+
+fn m28_forward(nm: f64, y0: f64, u0: f64, from_k: i32, sensor: f64) -> (f64, f64) {
+    let mut y: f64 = y0;
+    let mut u: f64 = u0;
+    let mut k: i32 = from_k;
+    while k < 6 {
+        let (y1, u1) = m28_sf(y, u, m28_cv(k), m28_idx(k - 1, nm), m28_idx(k, nm));
+        let dt: f64 = if k == 5 { sensor } else { m28_surf_t(k) };
+        let (y2, u2) = m28_tr(y1, u1, dt, m28_idx(k, nm));
+        y = y2; u = u2;
+        k = k + 1;
+    }
+    (y, u)
+}
+
+fn m28_ghost_path(nm: f64, y0: f64, u0: f64, ii: i32, jj: i32, sensor: f64) -> (f64, f64) {
+    let mut y: f64 = y0;
+    let mut u: f64 = u0;
+    let mut k: i32 = 0;
+    while k < ii {
+        let (y1, u1) = m28_sf(y, u, m28_cv(k), m28_idx(k - 1, nm), m28_idx(k, nm));
+        let (y2, u2) = m28_tr(y1, u1, m28_surf_t(k), m28_idx(k, nm));
+        y = y2; u = u2;
+        k = k + 1;
+    }
+    let ni: f64 = m28_idx(ii - 1, nm);
+    let (yr, ur) = m28_sf(y, u, m28_cv(ii), ni, -ni);
+    y = yr; u = ur;
+    let mut kb: i32 = ii - 1;
+    while kb > jj {
+        let (y1, u1) = m28_tr(y, u, -m28_surf_t(kb), -m28_idx(kb, nm));
+        let (y2, u2) = m28_sf(y1, u1, m28_cv(kb), -m28_idx(kb, nm), -m28_idx(kb - 1, nm));
+        y = y2; u = u2;
+        kb = kb - 1;
+    }
+    let (yj1, uj1) = m28_tr(y, u, -m28_surf_t(jj), -m28_idx(jj, nm));
+    let nj: f64 = m28_idx(jj, nm);
+    let (yj2, uj2) = m28_sf(yj1, uj1, m28_cv(jj), -nj, nj);
+    let (yj3, uj3) = m28_tr(yj2, uj2, m28_surf_t(jj), nj);
+    m28_forward(nm, yj3, uj3, jj + 1, sensor)
+}
+
+pub fn m28_lens_ghost_table() -> M28GhostTable {
+    let lam_d: f64 = 587.6;
+    let (r0, r1) = m28_forward(lam_d, 1.0, 0.0, 0, 0.0);
+    let f: f64 = -1.0 / r1;
+    let bfd: f64 = -r0 / r1;
+    let a: f64 = m28_to_stop(lam_d, 1.0, 0.0);
+    let b: f64 = m28_to_stop(lam_d, 0.0, 1.0);
+    let u0: f64 = 1.0e-3;
+    let (y_img, _u_img) = m28_forward(lam_d, -(b * u0) / a, u0, 0, bfd);
+    let mut m_vec: Vec<f64> = Vec::new();
+    let mut rho_vec: Vec<f64> = Vec::new();
+    let mut n_pairs: i32 = 0;
+    let mut ii: i32 = 1;
+    while ii < 6 {
+        let mut jj: i32 = 0;
+        while jj < ii {
+            let mut l: i32 = 0;
+            while l < 8 {
+                let nm: f64 = m28_bin_nm(l);
+                let al: f64 = m28_to_stop(nm, 1.0, 0.0);
+                let bl: f64 = m28_to_stop(nm, 0.0, 1.0);
+                let (chief, _uc) = m28_ghost_path(nm, -(bl * u0) / al, u0, ii, jj, bfd);
+                let (marg, _um) = m28_ghost_path(nm, 1.0, 0.0, ii, jj, bfd);
+                m_vec.push(chief / y_img);
+                rho_vec.push(marg);
+                l = l + 1;
+            }
+            n_pairs = n_pairs + 1;
+            jj = jj + 1;
+        }
+        ii = ii + 1;
+    }
+    M28GhostTable { f: f, bfd: bfd, n_pairs: n_pairs, m: m_vec, rho: rho_vec }
+}
+
+fn m28_fresnel(n0: f64, n1: f64, c0: f64, c1: f64) -> (f64, f64) {
+    ((n0 * c0 - n1 * c1) / (n0 * c0 + n1 * c1), (n1 * c0 - n0 * c1) / (n1 * c0 + n0 * c1))
+}
+
+fn m28_airy(a: f64, b: f64, d: f64) -> f64 {
+    let c: f64 = cos(d);
+    let s: f64 = sin(d);
+    let nr: f64 = a + b * c;
+    let ni: f64 = b * s;
+    let dr: f64 = 1.0 + a * b * c;
+    let di: f64 = a * b * s;
+    (nr * nr + ni * ni) / (dr * dr + di * di)
+}
+
+pub fn m28_film_reflectance(nm: f64, theta: f64, n1: f64, quarter_at: f64, ns: f64) -> f64 {
+    let d: f64 = quarter_at / (4.0 * n1);
+    let s0: f64 = sin(theta);
+    let c0: f64 = cos(theta);
+    if d <= 0.0 || n1 <= 0.0 {
+        let s2: f64 = s0 / ns;
+        let c2: f64 = sqrt(1.0 - s2 * s2);
+        let (rs, rp) = m28_fresnel(1.0, ns, c0, c2);
+        return 0.5 * (rs * rs + rp * rp);
+    }
+    let s1: f64 = s0 / n1;
+    let c1: f64 = sqrt(1.0 - s1 * s1);
+    let s2: f64 = s0 / ns;
+    let c2: f64 = sqrt(1.0 - s2 * s2);
+    let (r01s, r01p) = m28_fresnel(1.0, n1, c0, c1);
+    let (r12s, r12p) = m28_fresnel(n1, ns, c1, c2);
+    let delta: f64 = (4.0 * m28_pi() * n1 * d * c1) / nm;
+    0.5 * (m28_airy(r01s, r12s, delta) + m28_airy(r01p, r12p, delta))
+}
+
+fn m28_edge_rot(phi: f64, blades: i32, roundness: f64, rot: f64) -> f64 {
+    let seg: f64 = (2.0 * m28_pi()) / (blades as f64);
+    let mut a: f64 = m28_fmod(phi - rot, seg);
+    if a < 0.0 { a = a + seg; }
+    let half_seg: f64 = m28_pi() / (blades as f64);
+    let poly: f64 = cos(half_seg) / cos(a - half_seg);
+    poly + (1.0 - poly) * roundness
+}
+
+pub fn m28_shape_area(blades: i32, roundness: f64, rot: f64) -> f64 {
+    let steps: i32 = 4096;
+    let mut s: f64 = 0.0;
+    let mut k: i32 = 0;
+    while k < steps {
+        let e: f64 = m28_edge_rot((((k as f64) + 0.5) * 2.0 * m28_pi()) / (steps as f64), blades, roundness, rot);
+        s = s + e * e;
+        k = k + 1;
+    }
+    (0.5 * s * 2.0 * m28_pi()) / (steps as f64)
+}
+
+fn m28_over_of(r: f64, g: f64, b: f64, thr: f64) -> f64 {
+    let y: f64 = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    if !(y > thr) { return 0.0; }
+    (y - thr) / y
+}
+
+fn m28_sample_core(core: &Vec<f64>, w: i32, h: i32, px: f64, py: f64, c: i32) -> f64 {
+    let x: f64 = m28_min_d((w - 1) as f64, m28_max_d(0.0, px - 0.5));
+    let y: f64 = m28_min_d((h - 1) as f64, m28_max_d(0.0, py - 0.5));
+    let x0: i32 = m28_min_i(w - 2, floor(x) as i32);
+    let y0: i32 = m28_min_i(h - 2, floor(y) as i32);
+    let fx: f64 = x - (x0 as f64);
+    let fy: f64 = y - (y0 as f64);
+    let i: i32 = (y0 * w + x0) * 4 + c;
+    let w4: i32 = w * 4;
+    (core[i] * (1.0 - fx) + core[i + 4] * fx) * (1.0 - fy)
+        + (core[i + w4] * (1.0 - fx) + core[i + w4 + 4] * fx) * fy
+}
+
+fn m28_star_at(star_data: &Vec<f64>, m: i32, u: f64, v: f64, k: i32) -> f64 {
+    let mf: f64 = (m - 1) as f64;
+    if u < 0.0 || v < 0.0 || u > mf || v > mf { return 0.0; }
+    let x0: i32 = m28_min_i(m - 2, floor(u) as i32);
+    let y0: i32 = m28_min_i(m - 2, floor(v) as i32);
+    let fx: f64 = u - (x0 as f64);
+    let fy: f64 = v - (y0 as f64);
+    let i: i32 = (y0 * m + x0) * 3 + k;
+    let m3: i32 = m * 3;
+    (star_data[i] * (1.0 - fx) + star_data[i + 3] * fx) * (1.0 - fy)
+        + (star_data[i + m3] * (1.0 - fx) + star_data[i + m3 + 3] * fx) * fy
+}
+
+fn m28_make_bin_rgb() -> Vec<f64> {
+    let mut v: Vec<f64> = Vec::new();
+    v.push(0.02); v.push(0.00); v.push(0.34);
+    v.push(0.00); v.push(0.04); v.push(0.44);
+    v.push(0.01); v.push(0.19); v.push(0.18);
+    v.push(0.10); v.push(0.35); v.push(0.04);
+    v.push(0.28); v.push(0.28); v.push(0.00);
+    v.push(0.34); v.push(0.11); v.push(0.00);
+    v.push(0.19); v.push(0.03); v.push(0.00);
+    v.push(0.06); v.push(0.00); v.push(0.00);
+    v
+}
+
+fn m28_make_star(m: i32) -> Vec<f64> {
+    let mut data: Vec<f64> = Vec::new();
+    let h: f64 = ((m - 1) as f64) / 2.0;
+    let mut sum0: f64 = 0.0;
+    let mut sum1: f64 = 0.0;
+    let mut sum2: f64 = 0.0;
+    let mut y: i32 = 0;
+    while y < m {
+        let mut x: i32 = 0;
+        while x < m {
+            let dx: f64 = (x as f64) - h;
+            let dy: f64 = (y as f64) - h;
+            let r2: f64 = dx * dx + dy * dy;
+            let ang: f64 = atan2(dy, dx);
+            let spike: f64 = pow(m28_abs_d(cos(3.0 * ang)), 6.0);
+            let mut c: i32 = 0;
+            while c < 3 {
+                let sc: f64 = 1.0 + 0.12 * ((c - 1) as f64);
+                let val: f64 = (0.15 + 0.85 * spike) * exp(-r2 / (9.0 * sc * sc));
+                data.push(val);
+                if c == 0 { sum0 = sum0 + val; }
+                else if c == 1 { sum1 = sum1 + val; }
+                else { sum2 = sum2 + val; }
+                c = c + 1;
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    let mut out: Vec<f64> = Vec::new();
+    let n: i32 = m * m;
+    let mut i: i32 = 0;
+    while i < n {
+        out.push(data[i * 3] / sum0);
+        out.push(data[i * 3 + 1] / sum1);
+        out.push(data[i * 3 + 2] / sum2);
+        i = i + 1;
+    }
+    out
+}
+
+fn m28_build_plan(w: i32, h: i32, quarter_at: f64, gt: &M28GhostTable) -> M28LensPlan {
+    let diag_half: f64 = m28_hypot2(w as f64, h as f64) / 2.0;
+    let cx: f64 = (w as f64) / 2.0;
+    let cy: f64 = (h as f64) / 2.0;
+    let f_num: f64 = 2.8;
+    let sensor_hd: f64 = 21.63;
+    let tan_half: f64 = sensor_hd / gt.f;
+    let px_per_rho: f64 = diag_half / (2.0 * f_num * tan_half);
+    let area1: f64 = m28_shape_area(6, 0.15, 0.3);
+    let squeeze: f64 = 1.2;
+    let min_ghost: f64 = 2.0;
+    let mut ghosts: Vec<f64> = Vec::new();
+    let mut g: i32 = 0;
+    while g < gt.n_pairs {
+        let mut l: i32 = 0;
+        while l < 8 {
+            let rho: f64 = gt.rho[g * 8 + l];
+            let r: f64 = m28_max_d(min_ghost, m28_abs_d(rho) * px_per_rho);
+            let rot: f64 = 0.3 + (if rho < 0.0 { m28_pi() } else { 0.0 });
+            ghosts.push(gt.m[g * 8 + l]);
+            ghosts.push(r);
+            ghosts.push(rot);
+            ghosts.push(squeeze / (area1 * r * r));
+            l = l + 1;
+        }
+        g = g + 1;
+    }
+    let mut r0: Vec<f64> = Vec::new();
+    let mut rs: f64 = 0.0;
+    let mut l0: i32 = 0;
+    while l0 < 8 {
+        let rv: f64 = m28_film_reflectance(m28_bin_nm(l0), 0.0, 1.38, quarter_at, 1.52);
+        r0.push(rv);
+        rs = rs + rv;
+        l0 = l0 + 1;
+    }
+    let r_bar: f64 = rs / 8.0;
+    let nd: f64 = m28_glass_index(1, 587.6);
+    let mut ca_scale: Vec<f64> = Vec::new();
+    let mut halo_g: Vec<f64> = Vec::new();
+    let mut halo_r: Vec<f64> = Vec::new();
+    let mut l1: i32 = 0;
+    while l1 < 8 {
+        let nm: f64 = m28_bin_nm(l1);
+        let depth: f64 = 1.0 / (1.0 + exp(-(nm - 600.0) / 25.0));
+        halo_g.push(0.04 * depth);
+        halo_r.push(3.5 * (0.5 + depth));
+        ca_scale.push(1.0 + (0.06 * (m28_glass_index(1, nm) - nd)) / (nd - 1.0));
+        l1 = l1 + 1;
+    }
+    let bin_rgb: Vec<f64> = m28_make_bin_rgb();
+    let star_data: Vec<f64> = m28_make_star(17);
+    let ng: f64 = gt.n_pairs as f64;
+    let mut phi: Vec<f64> = Vec::new();
+    let mut c: i32 = 0;
+    while c < 3 {
+        let mut s: f64 = 0.04;
+        let mut l2: i32 = 0;
+        while l2 < 8 {
+            let bw: f64 = bin_rgb[l2 * 3 + c];
+            let rv: f64 = r0[l2];
+            s = s + bw * (ng * 25.0 * rv * rv + (0.05 * rv) / r_bar + halo_g[l2]);
+            l2 = l2 + 1;
+        }
+        phi.push(s);
+        c = c + 1;
+    }
+    M28LensPlan {
+        w: w, h: h, tile: 8, max_sources: 6, threshold: 2.0,
+        f_number: f_num, sensor_half_diag: sensor_hd, ghost_gain: 25.0,
+        min_ghost_px: min_ghost, squeeze: squeeze,
+        streak_gain: 0.05, streak_len: 14.0, streak_thick: 1.1, streak_angle: 0.15,
+        star_gain: 0.04, halo_gain: 0.04, halo_radius: 3.5, ca_amount: 0.06,
+        coat_n1: 1.38, coat_q: quarter_at, coat_ns: 1.52,
+        iris_blades: 6, iris_round: 0.15, iris_rot: 0.3,
+        diag_half: diag_half, cx: cx, cy: cy, tan_half: tan_half, r_bar: r_bar,
+        star_cell: 0.85, star_m: 17, n_ghosts: gt.n_pairs,
+        ghosts: ghosts, r0: r0, ca_scale: ca_scale, halo_g: halo_g, halo_r: halo_r,
+        phi: phi, bin_rgb: bin_rgb, star_data: star_data,
+    }
+}
+
+fn m28_make_hdr_frame(w: i32, h: i32) -> Vec<f64> {
+    let mut d: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut r: f64 = 0.12 + 0.35 * ((x as f64) / (w as f64));
+            let mut g: f64 = 0.14 + 0.30 * ((y as f64) / (h as f64));
+            let mut b: f64 = 0.18 + 0.25 * (1.0 - (x as f64) / (w as f64));
+            if x >= 5 && x <= 7 && y >= 4 && y <= 6 { r = 14.0; g = 11.5; b = 8.0; }
+            if x >= 24 && x <= 26 && y >= 15 && y <= 17 { r = 6.5; g = 9.0; b = 13.0; }
+            d.push(r); d.push(g); d.push(b); d.push(1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    d
+}
+
+fn m28_run_lens(plan: &M28LensPlan, d: &Vec<f64>) -> Vec<f64> {
+    let w: i32 = plan.w;
+    let h: i32 = plan.h;
+    let tile: i32 = plan.tile;
+    let tw: i32 = (w + tile - 1) / tile;
+    let th: i32 = (h + tile - 1) / tile;
+
+    // 1. Extract bright tiles
+    let mut t_id: Vec<i32> = Vec::new();
+    let mut t_x: Vec<f64> = Vec::new();
+    let mut t_y: Vec<f64> = Vec::new();
+    let mut t_e0: Vec<f64> = Vec::new();
+    let mut t_e1: Vec<f64> = Vec::new();
+    let mut t_e2: Vec<f64> = Vec::new();
+    let mut t_lum: Vec<f64> = Vec::new();
+
+    let mut ty: i32 = 0;
+    while ty < th {
+        let mut tx: i32 = 0;
+        while tx < tw {
+            let mut e0: f64 = 0.0;
+            let mut e1: f64 = 0.0;
+            let mut e2: f64 = 0.0;
+            let mut sw: f64 = 0.0;
+            let mut sx: f64 = 0.0;
+            let mut sy: f64 = 0.0;
+            let y_end: i32 = m28_min_i(h, ty * tile + tile);
+            let x_end: i32 = m28_min_i(w, tx * tile + tile);
+            let mut y: i32 = ty * tile;
+            while y < y_end {
+                let mut x: i32 = tx * tile;
+                while x < x_end {
+                    let i: i32 = (y * w + x) * 4;
+                    let f: f64 = m28_over_of(d[i], d[i + 1], d[i + 2], plan.threshold);
+                    if f > 0.0 {
+                        let a0: f64 = d[i] * f;
+                        let a1: f64 = d[i + 1] * f;
+                        let a2: f64 = d[i + 2] * f;
+                        let y0: f64 = 0.2126 * a0 + 0.7152 * a1 + 0.0722 * a2;
+                        e0 = e0 + a0; e1 = e1 + a1; e2 = e2 + a2;
+                        sw = sw + y0;
+                        sx = sx + ((x as f64) + 0.5) * y0;
+                        sy = sy + ((y as f64) + 0.5) * y0;
+                    }
+                    x = x + 1;
+                }
+                y = y + 1;
+            }
+            if sw > 0.0 {
+                t_id.push(ty * tw + tx);
+                t_x.push(sx / sw);
+                t_y.push(sy / sw);
+                t_e0.push(e0); t_e1.push(e1); t_e2.push(e2);
+                t_lum.push(sw);
+            }
+            tx = tx + 1;
+        }
+        ty = ty + 1;
+    }
+
+    // Insertion sort descending by lum (tie-break ascending by tile id)
+    let nt: i32 = t_id.len() as i32;
+    let mut order: Vec<i32> = Vec::new();
+    let mut oi: i32 = 0;
+    while oi < nt { order.push(oi); oi = oi + 1; }
+    let mut si: i32 = 1;
+    while si < nt {
+        let key: i32 = order[si];
+        let mut sj: i32 = si - 1;
+        let mut keep_go: bool = true;
+        while sj >= 0 && keep_go {
+            let cur: i32 = order[sj];
+            let swap: bool = if t_lum[cur] != t_lum[key] {
+                t_lum[cur] < t_lum[key]
+            } else {
+                t_id[cur] > t_id[key]
+            };
+            if swap {
+                order[sj + 1] = cur;
+                sj = sj - 1;
+            } else {
+                keep_go = false;
+            }
+        }
+        order[sj + 1] = key;
+        si = si + 1;
+    }
+
+    let mut keep: Vec<i32> = Vec::new();
+    let mut kz: i32 = 0;
+    while kz < tw * th { keep.push(0); kz = kz + 1; }
+
+    let n_src: i32 = m28_min_i(nt, plan.max_sources);
+    let mut s_x: Vec<f64> = Vec::new();
+    let mut s_y: Vec<f64> = Vec::new();
+    let mut s_e0: Vec<f64> = Vec::new();
+    let mut s_e1: Vec<f64> = Vec::new();
+    let mut s_e2: Vec<f64> = Vec::new();
+    let mut s_ghost: Vec<f64> = Vec::new();
+    let mut s_streak: Vec<f64> = Vec::new();
+
+    let mut sk: i32 = 0;
+    while sk < n_src {
+        let idx: i32 = order[sk];
+        keep[t_id[idx]] = 1;
+        let sxv: f64 = t_x[idx];
+        let syv: f64 = t_y[idx];
+        s_x.push(sxv); s_y.push(syv);
+        s_e0.push(t_e0[idx]); s_e1.push(t_e1[idx]); s_e2.push(t_e2[idx]);
+        let theta: f64 = atan((m28_hypot2(sxv - plan.cx, syv - plan.cy) / plan.diag_half) * plan.tan_half);
+        let mut l: i32 = 0;
+        while l < 8 {
+            let r: f64 = m28_film_reflectance(m28_bin_nm(l), theta, plan.coat_n1, plan.coat_q, plan.coat_ns);
+            s_ghost.push(plan.ghost_gain * r * r);
+            s_streak.push((plan.streak_gain * r) / plan.r_bar);
+            l = l + 1;
+        }
+        sk = sk + 1;
+    }
+
+    // 2. Core pass
+    let mut core: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let i: i32 = (y * w + x) * 4;
+            let kv: f64 = if keep[(y / tile) * tw + (x / tile)] != 0 {
+                m28_over_of(d[i], d[i + 1], d[i + 2], plan.threshold)
+            } else {
+                0.0
+            };
+            core.push(d[i] * (1.0 - plan.phi[0] * kv));
+            core.push(d[i + 1] * (1.0 - plan.phi[1] * kv));
+            core.push(d[i + 2] * (1.0 - plan.phi[2] * kv));
+            core.push(1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    // 3. Gather pass: CA core + starburst + streak + halo + 15x8 polygonal iris ghosts
+    let hm: f64 = ((plan.star_m - 1) as f64) / 2.0;
+    let ca: f64 = cos(plan.streak_angle);
+    let sa: f64 = sin(plan.streak_angle);
+    let big_l: f64 = plan.streak_len;
+    let sg: f64 = plan.streak_thick;
+    let s_inv: f64 = 1.0 / (plan.star_cell * plan.star_cell);
+    let mut out: Vec<f64> = Vec::new();
+    let mut py: i32 = 0;
+    while py < h {
+        let mut px: i32 = 0;
+        while px < w {
+            let qx: f64 = (px as f64) + 0.5;
+            let qy: f64 = (py as f64) + 0.5;
+            let mut o0: f64 = 0.0;
+            let mut o1: f64 = 0.0;
+            let mut o2: f64 = 0.0;
+            let mut l: i32 = 0;
+            while l < 8 {
+                let sc: f64 = plan.ca_scale[l];
+                let sx: f64 = plan.cx + (qx - plan.cx) / sc;
+                let sy: f64 = plan.cy + (qy - plan.cy) / sc;
+                o0 = o0 + plan.bin_rgb[l * 3] * m28_sample_core(&core, w, h, sx, sy, 0);
+                o1 = o1 + plan.bin_rgb[l * 3 + 1] * m28_sample_core(&core, w, h, sx, sy, 1);
+                o2 = o2 + plan.bin_rgb[l * 3 + 2] * m28_sample_core(&core, w, h, sx, sy, 2);
+                l = l + 1;
+            }
+            let mut si2: i32 = 0;
+            while si2 < n_src {
+                let dx: f64 = qx - s_x[si2];
+                let dy: f64 = qy - s_y[si2];
+                let su: f64 = dx / plan.star_cell + hm;
+                let sv: f64 = dy / plan.star_cell + hm;
+                o0 = o0 + s_e0[si2] * plan.star_gain * m28_star_at(&plan.star_data, plan.star_m, su, sv, 0) * s_inv;
+                o1 = o1 + s_e1[si2] * plan.star_gain * m28_star_at(&plan.star_data, plan.star_m, su, sv, 1) * s_inv;
+                o2 = o2 + s_e2[si2] * plan.star_gain * m28_star_at(&plan.star_data, plan.star_m, su, sv, 2) * s_inv;
+
+                let a_s: f64 = ca * dx + sa * dy;
+                let b_s: f64 = -sa * dx + ca * dy;
+                let k_s: f64 = (exp(-m28_abs_d(a_s) / big_l) / (2.0 * big_l))
+                    * (exp((-b_s * b_s) / (2.0 * sg * sg)) / (sg * 2.5066282746310002));
+                let r_s: f64 = m28_hypot2(dx, dy);
+                let mut l2: i32 = 0;
+                while l2 < 8 {
+                    let hr: f64 = plan.halo_r[l2];
+                    let hk: f64 = (plan.halo_g[l2] * exp(-r_s / hr)) / (6.283185307179586 * hr * hr);
+                    let fv: f64 = s_streak[si2 * 8 + l2] * k_s + hk;
+                    o0 = o0 + s_e0[si2] * plan.bin_rgb[l2 * 3] * fv;
+                    o1 = o1 + s_e1[si2] * plan.bin_rgb[l2 * 3 + 1] * fv;
+                    o2 = o2 + s_e2[si2] * plan.bin_rgb[l2 * 3 + 2] * fv;
+                    l2 = l2 + 1;
+                }
+                let mut gi: i32 = 0;
+                while gi < plan.n_ghosts {
+                    let mut l3: i32 = 0;
+                    while l3 < 8 {
+                        let base: i32 = (gi * 8 + l3) * 4;
+                        let gm: f64 = plan.ghosts[base];
+                        let grad: f64 = plan.ghosts[base + 1];
+                        let grot: f64 = plan.ghosts[base + 2];
+                        let ginv: f64 = plan.ghosts[base + 3];
+                        let gx: f64 = plan.cx + gm * (s_x[si2] - plan.cx);
+                        let gy: f64 = plan.cy + gm * (s_y[si2] - plan.cy);
+                        let vx: f64 = (qx - gx) * plan.squeeze;
+                        let vy: f64 = qy - gy;
+                        let rr: f64 = m28_hypot2(vx, vy);
+                        if rr <= grad + 1.0 {
+                            let ed: f64 = m28_edge_rot(atan2(vy, vx), plan.iris_blades, plan.iris_round, grot);
+                            let cov: f64 = m28_min_d(1.0, m28_max_d(0.0, grad * ed - rr + 0.5));
+                            if cov > 0.0 {
+                                let fg: f64 = s_ghost[si2 * 8 + l3] * cov * ginv;
+                                o0 = o0 + s_e0[si2] * plan.bin_rgb[l3 * 3] * fg;
+                                o1 = o1 + s_e1[si2] * plan.bin_rgb[l3 * 3 + 1] * fg;
+                                o2 = o2 + s_e2[si2] * plan.bin_rgb[l3 * 3 + 2] * fg;
+                            }
+                        }
+                        l3 = l3 + 1;
+                    }
+                    gi = gi + 1;
+                }
+                si2 = si2 + 1;
+            }
+            out.push(o0); out.push(o1); out.push(o2); out.push(1.0);
+            px = px + 1;
+        }
+        py = py + 1;
+    }
+    out
+}
+
+fn m28_hash_f64_vec(v: &Vec<f64>, h0: u64) -> u64 {
+    let n: i32 = v.len() as i32;
+    let mut h: u64 = h0;
+    let mut i: i32 = 0;
+    while i < n {
+        h = kit::fnv_f32(h, v[i]);
+        i = i + 1;
+    }
+    h
+}
+
+pub fn run_lens_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let gt: M28GhostTable = m28_lens_ghost_table();
+    let mut h_ghosts: u64 = kit::fnv_start();
+    h_ghosts = kit::fnv_f32(h_ghosts, gt.f);
+    h_ghosts = kit::fnv_f32(h_ghosts, gt.bfd);
+    let mut g: i32 = 0;
+    while g < gt.n_pairs {
+        let mut l: i32 = 0;
+        while l < 8 {
+            h_ghosts = kit::fnv_f32(h_ghosts, gt.m[g * 8 + l]);
+            h_ghosts = kit::fnv_f32(h_ghosts, gt.rho[g * 8 + l]);
+            l = l + 1;
+        }
+        g = g + 1;
+    }
+
+    let mut h_coat: u64 = kit::fnv_start();
+    let mut h_all: u64 = h_ghosts;
+    let mut a: i32 = 0;
+    while a < 9 {
+        let th: f64 = ((a as f64) * 8.0) * (m28_pi() / 180.0);
+        let mut l: i32 = 0;
+        while l < 8 {
+            let nm: f64 = m28_bin_nm(l);
+            let r_c: f64 = m28_film_reflectance(nm, th, 1.38, 550.0, 1.52);
+            let r_b: f64 = m28_film_reflectance(nm, th, 1.38, 0.0, 1.52);
+            h_coat = kit::fnv_f32(h_coat, r_c);
+            h_coat = kit::fnv_f32(h_coat, r_b);
+            h_all = kit::fnv_f32(h_all, r_c);
+            h_all = kit::fnv_f32(h_all, r_b);
+            l = l + 1;
+        }
+        a = a + 1;
+    }
+
+    let mut h_iris: u64 = kit::fnv_start();
+    let a5: f64 = m28_shape_area(5, 0.15, 0.3);
+    let a6: f64 = m28_shape_area(6, 0.15, 0.3);
+    let a7: f64 = m28_shape_area(7, 0.15, 0.3);
+    let a9: f64 = m28_shape_area(9, 0.15, 0.3);
+    h_iris = kit::fnv_f32(h_iris, a5);
+    h_iris = kit::fnv_f32(h_iris, a6);
+    h_iris = kit::fnv_f32(h_iris, a7);
+    h_iris = kit::fnv_f32(h_iris, a9);
+    h_all = kit::fnv_f32(h_all, a5);
+    h_all = kit::fnv_f32(h_all, a6);
+    h_all = kit::fnv_f32(h_all, a7);
+    h_all = kit::fnv_f32(h_all, a9);
+
+    let w: i32 = 32;
+    let h: i32 = 24;
+    let hdr: Vec<f64> = m28_make_hdr_frame(w, h);
+    let pl_c: M28LensPlan = m28_build_plan(w, h, 550.0, &gt);
+    let pl_u: M28LensPlan = m28_build_plan(w, h, 0.0, &gt);
+    let out_c: Vec<f64> = m28_run_lens(&pl_c, &hdr);
+    let out_u: Vec<f64> = m28_run_lens(&pl_u, &hdr);
+
+    let h_frame: u64 = m28_hash_f64_vec(&out_c, kit::fnv_start());
+    let h_ctrl: u64 = m28_hash_f64_vec(&out_u, kit::fnv_start());
+    h_all = m28_hash_f64_vec(&out_c, h_all);
+
+    (h_ghosts, h_coat, h_iris, h_frame, h_all, h_ctrl)
+}

@@ -1,0 +1,451 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #36: Physical VHS Analog Magnetic Tape Signal Chain
+// Bit-exact 0-ULP port of native/src/renderer/style_vhs.cpp:
+// 4 fsc NTSC transport jitter & helical head-switch skew, 65-tap Blackman-sinc FM luma lowpass
+// & peaking, Gaussian color-under chroma delay & phase wobble, drifting tracking-noise band,
+// 64-sample tape dropout line-above concealment, exact Y'IQ inverse, and display resampling.
+
+
+pub struct M36VhsPlan {
+    luma_mhz: f64,
+    chroma_mhz: f64,
+    luma_noise_p: f64,
+    chroma_noise_p: f64,
+    jitter: f64,
+    peaking: f64,
+    dropouts: f64,
+    chroma_delay_ns: f64,
+    phase_noise_deg: f64,
+    generations: i32,
+    head_switch_lines: i32,
+    head_skew: f64,
+    tracking: f64,
+    seed: i32,
+    fs: f64,
+    n_samp: i32,
+    lines: i32,
+    src_w: i32,
+    src_h: i32,
+    g: i32,
+    luma: Vec<f64>,
+    peak: Vec<f64>,
+    chroma: Vec<f64>,
+    luma_noise: f64,
+    chroma_noise: f64,
+    delay: f64,
+    phase_noise: f64,
+    chroma_knot: f64,
+}
+
+fn m36_pi() -> f64 { 3.141592653589793 }
+
+fn m36_min_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn m36_max_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn m36_min_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn m36_max_i(a: i32, b: i32) -> i32 {
+    if a < b { return b; }
+    a
+}
+
+fn m36_u32(v: i64) -> u64 {
+    (v as u64) & 4294967295
+}
+
+fn m36_pcg(v0: u64) -> u64 {
+    let v: u64 = v0 & 4294967295;
+    let state: u64 = (v.wrapping_mul(747796405).wrapping_add(2891336453)) & 4294967295;
+    let shift: u64 = (state >> 28) + 4;
+    let word: u64 = (((state >> shift) ^ state).wrapping_mul(277803737)) & 4294967295;
+    ((word >> 22) ^ word) & 4294967295
+}
+
+fn m36_hash3(x: u64, y: u64, z: u64) -> f64 {
+    let h: u64 = m36_pcg((x & 4294967295) ^ m36_pcg((y & 4294967295) ^ m36_pcg(z & 4294967295)));
+    (h as f64) / 4294967296.0
+}
+
+fn m36_gauss(a: u64, b: u64, c: u64) -> f64 {
+    let u1: f64 = m36_max_d(1.0e-7, m36_hash3(a, b, c));
+    let u2: f64 = m36_hash3(a, b, (c + 7919) & 4294967295);
+    sqrt(-2.0 * ln(u1)) * cos(2.0 * m36_pi() * u2)
+}
+
+fn m36_lowpass_taps(cutoff: f64, half: i32) -> Vec<f64> {
+    let pi: f64 = m36_pi();
+    let n: i32 = 2 * half + 1;
+    let mut h: Vec<f64> = Vec::new();
+    let mut sum: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < n {
+        let m: i32 = i - half;
+        let x: f64 = 2.0 * cutoff * (m as f64);
+        let sinc: f64 = if m == 0 { 2.0 * cutoff } else { sin(pi * x) / (pi * (m as f64)) };
+        let w: f64 = 0.42
+            - 0.5 * cos((2.0 * pi * (i as f64)) / ((n - 1) as f64))
+            + 0.08 * cos((4.0 * pi * (i as f64)) / ((n - 1) as f64));
+        let v: f64 = sinc * w;
+        h.push(v);
+        sum = sum + v;
+        i = i + 1;
+    }
+    let mut out: Vec<f64> = Vec::new();
+    i = 0;
+    while i < n { out.push(h[i] / sum); i = i + 1; }
+    out
+}
+
+fn m36_gauss_taps(cutoff: f64) -> Vec<f64> {
+    let sigma: f64 = 0.13251 / cutoff;
+    let r: i32 = ceil(4.0 * sigma) as i32;
+    let mut h: Vec<f64> = Vec::new();
+    let mut s: f64 = 0.0;
+    let mut i: i32 = -r;
+    while i <= r {
+        let q: f64 = (i as f64) / sigma;
+        let v: f64 = exp(-0.5 * (q * q));
+        h.push(v);
+        s = s + v;
+        i = i + 1;
+    }
+    let n: i32 = h.len() as i32;
+    let mut out: Vec<f64> = Vec::new();
+    let mut k: i32 = 0;
+    while k < n { out.push(h[k] / s); k = k + 1; }
+    out
+}
+
+fn m36_resolve(kind: i32, src_w: i32, src_h: i32) -> M36VhsPlan {
+    // 0 = sp-fresh, 1 = lp-worn, 2 = ep-rental, 3 = thriller, 4 = clean zero-artifact control
+    let mut lm: f64 = 3.0;
+    let mut cm: f64 = 0.5;
+    let mut ln_p: f64 = 0.012;
+    let mut cn_p: f64 = 0.01;
+    let mut jit: f64 = 0.25;
+    let mut pk: f64 = 0.35;
+    let mut drp: f64 = 0.002;
+    let mut cdly: f64 = 150.0;
+    let mut pnd: f64 = 1.5;
+    let mut gens: i32 = 1;
+    let mut hsk: f64 = 6.0;
+    let mut trk: f64 = 0.0;
+    if kind == 1 {
+        lm = 2.5; cm = 0.45; ln_p = 0.022; cn_p = 0.018; jit = 0.6; pk = 0.4;
+        drp = 0.012; cdly = 220.0; pnd = 3.0;
+    } else if kind == 2 {
+        lm = 2.2; cm = 0.4; ln_p = 0.03; cn_p = 0.028; jit = 1.0; pk = 0.45;
+        drp = 0.02; cdly = 260.0; pnd = 4.0; gens = 3; trk = 0.6;
+    } else if kind == 3 {
+        lm = 2.4; cm = 0.42; ln_p = 0.02; cn_p = 0.016; jit = 0.7; pk = 0.42;
+        drp = 0.008; cdly = 240.0; pnd = 3.5; gens = 2; trk = 0.0;
+    } else if kind == 4 {
+        lm = 2.2; cm = 0.4; ln_p = 0.0; cn_p = 0.0; jit = 0.0; pk = 0.45;
+        drp = 0.0; cdly = 0.0; pnd = 0.0; gens = 1; hsk = 0.0; trk = 0.0;
+    }
+    let fsc: f64 = 315.0 / 88.0;
+    let fs: f64 = 4.0 * fsc;
+    let g: i32 = m36_max_i(1, gens);
+    let n_samp: i32 = m36_max_i(1, floor((src_w as f64) * fs / 13.5 + 0.5) as i32);
+    let sg: f64 = sqrt(g as f64);
+    let eff_lm: f64 = lm / sg;
+    let eff_cm: f64 = cm / sg;
+    M36VhsPlan {
+        luma_mhz: lm, chroma_mhz: cm, luma_noise_p: ln_p, chroma_noise_p: cn_p,
+        jitter: jit, peaking: pk, dropouts: drp, chroma_delay_ns: cdly, phase_noise_deg: pnd,
+        generations: gens, head_switch_lines: 6, head_skew: hsk, tracking: trk, seed: 1,
+        fs: fs, n_samp: n_samp, lines: src_h, src_w: src_w, src_h: src_h, g: g,
+        luma: m36_lowpass_taps(m36_min_d(0.49, eff_lm / fs), 32),
+        peak: m36_lowpass_taps(m36_min_d(0.49, (eff_lm * 0.45) / fs), 32),
+        chroma: m36_gauss_taps(eff_cm / fs),
+        luma_noise: ln_p * sg, chroma_noise: cn_p * sg,
+        delay: cdly * 1.0e-3 * fs, phase_noise: (pnd * m36_pi()) / 180.0 * sg,
+        chroma_knot: 24.0,
+    }
+}
+
+fn m36_tracking_band(p: &M36VhsPlan, y: i32, f: i32) -> f64 {
+    let m: f64 = (p.lines + 40) as f64;
+    let v: f64 = (f as f64) * 3.7;
+    let c: f64 = (v - floor(v / m) * m) - 20.0;
+    let d: f64 = kit::absd((y as f64) - c) / 6.0;
+    p.tracking * m36_max_d(0.0, 1.0 - d * d)
+}
+
+fn m36_line_shift(p: &M36VhsPlan, y: i32, f: i32) -> f64 {
+    let s: i64 = p.seed as i64;
+    let mut d: f64 = p.jitter * (
+        0.6 * sin((y as f64) * 0.031 + (f as f64) * 0.7 + (p.seed as f64))
+        + 0.4 * m36_gauss(m36_u32(y as i64), m36_u32(f as i64), m36_u32(11 + s))
+    );
+    let from_bot: i32 = p.lines - 1 - y;
+    if from_bot < p.head_switch_lines {
+        let t: f64 = ((p.head_switch_lines - from_bot) as f64) / (p.head_switch_lines as f64);
+        d = d + p.head_skew * pow(t, 2.0);
+    }
+    if p.tracking > 0.0 {
+        let band: f64 = m36_tracking_band(p, y, f);
+        d = d + band * 12.0 * m36_gauss(m36_u32(y as i64), m36_u32(f as i64), m36_u32(23 + s));
+    }
+    d
+}
+
+fn m36_held(src: &Vec<f32>, sw: i32, n_samp: i32, y: i32, k: i32) -> (f64, f64, f64) {
+    let kk: i32 = m36_min_i(n_samp - 1, m36_max_i(0, k));
+    let x: i32 = m36_min_i(sw - 1, m36_max_i(0, floor((((kk as f64) + 0.5) * (sw as f64)) / (n_samp as f64)) as i32));
+    let i: i32 = (y * sw + x) * 4;
+    let r: f64 = src[i] as f64;
+    let g: f64 = src[i + 1] as f64;
+    let b: f64 = src[i + 2] as f64;
+    (
+        0.299 * r + 0.587 * g + 0.114 * b,
+        0.596 * r - 0.274 * g - 0.322 * b,
+        0.211 * r - 0.523 * g + 0.312 * b,
+    )
+}
+
+fn m36_at(sm: &Vec<f32>, n_samp: i32, y: i32, k: f64, c: i32) -> f64 {
+    let kf: f64 = m36_min_d((n_samp - 1) as f64, m36_max_d(0.0, k));
+    let k0: f64 = floor(kf);
+    let t: f64 = kf - k0;
+    let i0: i32 = k0 as i32;
+    let i1: i32 = m36_min_i(n_samp - 1, i0 + 1);
+    let v0: f64 = sm[(y * n_samp + i0) * 4 + c] as f64;
+    let v1: f64 = sm[(y * n_samp + i1) * 4 + c] as f64;
+    v0 * (1.0 - t) + v1 * t
+}
+
+fn m36_fir(taps: &Vec<f64>, sm: &Vec<f32>, n_samp: i32, y: i32, c: i32, k: f64) -> f64 {
+    let half: i32 = ((taps.len() as i32) - 1) / 2;
+    let mut s: f64 = 0.0;
+    let mut j: i32 = -half;
+    while j <= half {
+        s = s + taps[j + half] * m36_at(sm, n_samp, y, k + (j as f64), c);
+        j = j + 1;
+    }
+    s
+}
+
+fn m36_yiq_inv() -> Vec<f64> {
+    let a: f64 = 0.299; let b: f64 = 0.587; let c: f64 = 0.114;
+    let d: f64 = 0.596; let e: f64 = -0.274; let f: f64 = -0.322;
+    let g: f64 = 0.211; let h: f64 = -0.523; let i: f64 = 0.312;
+    let ca: f64 = e * i - f * h;
+    let cb: f64 = -(d * i - f * g);
+    let cc: f64 = d * h - e * g;
+    let det: f64 = a * ca + b * cb + c * cc;
+    let mut m: Vec<f64> = Vec::new();
+    m.push(ca / det); m.push(-(b * i - c * h) / det); m.push((b * f - c * e) / det);
+    m.push(cb / det); m.push((a * i - c * g) / det); m.push(-(a * f - c * d) / det);
+    m.push(cc / det); m.push(-(a * h - b * g) / det); m.push((a * e - b * d) / det);
+    m
+}
+
+fn m36_hash_vhs(p: &M36VhsPlan, src: &Vec<f32>, f: i32, h0: u64) -> u64 {
+    let n_samp: i32 = p.n_samp;
+    let lines: i32 = p.lines;
+    let sw: i32 = p.src_w;
+    let s: i64 = p.seed as i64;
+    let uf: u64 = m36_u32(f as i64);
+
+    // Pass 1: transport time-base displacement
+    let mut sm: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < lines {
+        let sh: f64 = m36_line_shift(p, y, f);
+        let mut k: i32 = 0;
+        while k < n_samp {
+            let kf: f64 = (k as f64) - sh;
+            let k0: f64 = floor(kf);
+            let t: f64 = kf - k0;
+            let ik0: i32 = k0 as i32;
+            let (a0, a1, a2) = m36_held(src, sw, n_samp, y, ik0);
+            let (b0, b1, b2) = m36_held(src, sw, n_samp, y, ik0 + 1);
+            let s0: f64 = a0 * (1.0 - t) + b0 * t;
+            let s1: f64 = a1 * (1.0 - t) + b1 * t;
+            let s2: f64 = a2 * (1.0 - t) + b2 * t;
+            sm.push(s0 as f32); sm.push(s1 as f32); sm.push(s2 as f32); sm.push(0.0 as f32);
+            k = k + 1;
+        }
+        y = y + 1;
+    }
+
+    // Pass 2: tape FM luma + color-under chroma + phase wobble + noise
+    let mut tp: Vec<f32> = Vec::new();
+    y = 0;
+    while y < lines {
+        let uy: u64 = m36_u32(y as i64);
+        let rot: f64 = p.phase_noise * m36_gauss(uy, uf, m36_u32(31 + s));
+        let cr: f64 = cos(rot);
+        let sr: f64 = sin(rot);
+        let band: f64 = if p.tracking > 0.0 { m36_tracking_band(p, y, f) } else { 0.0 };
+        let mut k: i32 = 0;
+        while k < n_samp {
+            let fk: f64 = k as f64;
+            let yv: f64 = m36_fir(&p.luma, &sm, n_samp, y, 0, fk);
+            let yl: f64 = m36_fir(&p.peak, &sm, n_samp, y, 0, fk);
+            let gk: i64 = (y as i64) * 4096 + (k as i64);
+            let u41: u64 = m36_u32(41 + s);
+            let nz: f64 = p.luma_noise * (
+                m36_gauss(m36_u32(gk), uf, u41)
+                - 0.5 * (m36_gauss(m36_u32(gk - 1), uf, u41) + m36_gauss(m36_u32(gk + 1), uf, u41))
+            );
+            let yo: f64 = yv + p.peaking * (yv - yl) + nz;
+            let kd: f64 = fk - p.delay;
+            let iv: f64 = m36_fir(&p.chroma, &sm, n_samp, y, 1, kd);
+            let qv: f64 = m36_fir(&p.chroma, &sm, n_samp, y, 2, kd);
+            let m_v: f64 = fk / p.chroma_knot;
+            let m0: f64 = floor(m_v);
+            let t: f64 = m_v - m0;
+            let im0: i64 = m0 as i64;
+            let cn0: f64 = p.chroma_noise * (
+                (1.0 - t) * m36_gauss(uy, m36_u32(im0), m36_u32(53 + s))
+                + t * m36_gauss(uy, m36_u32(im0 + 1), m36_u32(53 + s))
+            );
+            let cn1: f64 = p.chroma_noise * (
+                (1.0 - t) * m36_gauss(uy, m36_u32(im0), m36_u32(54 + s))
+                + t * m36_gauss(uy, m36_u32(im0 + 1), m36_u32(54 + s))
+            );
+            let tn: f64 = band * 0.5 * m36_gauss(m36_u32(gk), uf, m36_u32(61 + s));
+            let t0: f64 = yo + tn;
+            let t1: f64 = iv * cr - qv * sr + cn0;
+            let t2: f64 = iv * sr + qv * cr + cn1;
+            tp.push(t0 as f32); tp.push(t1 as f32); tp.push(t2 as f32); tp.push(0.0 as f32);
+            k = k + 1;
+        }
+        y = y + 1;
+    }
+
+    // Pass 3: playback dropout concealment + Y'IQ inverse
+    let inv: Vec<f64> = m36_yiq_inv();
+    let drop_p: f64 = p.dropouts * (p.g as f64);
+    let mut sig: Vec<f32> = Vec::new();
+    let mut hash: u64 = h0;
+    y = 0;
+    while y < lines {
+        let uy: u64 = m36_u32(y as i64);
+        let mut k: i32 = 0;
+        while k < n_samp {
+            let seg: i32 = k / 64;
+            let useg: u64 = m36_u32(seg as i64);
+            let hit: bool = m36_hash3(uy, useg, m36_u32((f as i64) * 131 + 71)) < drop_p;
+            let run: f64 = m36_hash3(uy, useg, m36_u32((f as i64) * 131 + 73)) * 64.0;
+            let drop: bool = hit && ((k - seg * 64) as f64) < run && y > 0;
+            let qy: i32 = if drop { y - 1 } else { y };
+            let q: i32 = (qy * n_samp + k) * 4;
+            let ty: f64 = tp[q] as f64;
+            let ti: f64 = tp[q + 1] as f64;
+            let tq: f64 = tp[q + 2] as f64;
+            let r_o: f64 = inv[0] * ty + inv[1] * ti + inv[2] * tq;
+            let g_o: f64 = inv[3] * ty + inv[4] * ti + inv[5] * tq;
+            let b_o: f64 = inv[6] * ty + inv[7] * ti + inv[8] * tq;
+            let a_o: f64 = if drop { 1.0 } else { 0.0 };
+            let fr: f32 = r_o as f32;
+            let fg: f32 = g_o as f32;
+            let fb: f32 = b_o as f32;
+            let fa: f32 = a_o as f32;
+            sig.push(fr); sig.push(fg); sig.push(fb); sig.push(fa);
+            hash = kit::fnv_f32(hash, fr as f64);
+            hash = kit::fnv_f32(hash, fg as f64);
+            hash = kit::fnv_f32(hash, fb as f64);
+            hash = kit::fnv_f32(hash, fa as f64);
+            k = k + 1;
+        }
+        y = y + 1;
+    }
+
+    // Pass 4: display resample to src_w x src_h RGBA8
+    let dw: i32 = p.src_w;
+    let dh: i32 = p.src_h;
+    y = 0;
+    while y < dh {
+        let ly: i32 = m36_min_i(lines - 1, floor(((y as f64) * (lines as f64)) / (dh as f64)) as i32);
+        let mut x: i32 = 0;
+        while x < dw {
+            let kf: f64 = (((x as f64) + 0.5) * (n_samp as f64)) / (dw as f64) - 0.5;
+            let k0: i32 = m36_max_i(0, m36_min_i(n_samp - 1, floor(kf) as i32));
+            let k1: i32 = m36_min_i(n_samp - 1, k0 + 1);
+            let t: f64 = m36_min_d(1.0, m36_max_d(0.0, kf - (k0 as f64)));
+            let mut c: i32 = 0;
+            while c < 3 {
+                let v0: f64 = sig[(ly * n_samp + k0) * 4 + c] as f64;
+                let v1: f64 = sig[(ly * n_samp + k1) * 4 + c] as f64;
+                let v: f64 = v0 * (1.0 - t) + v1 * t;
+                let b8: u64 = floor(m36_min_d(1.0, m36_max_d(0.0, v)) * 255.0 + 0.5) as u64;
+                hash = kit::fnv_u8(hash, b8);
+                c = c + 1;
+            }
+            hash = kit::fnv_u8(hash, 255);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}
+
+fn m36_make_color_bars(w: i32, h: i32) -> Vec<f32> {
+    let mut src: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut bi: i32 = (x * 8) / w;
+            if bi > 7 { bi = 7; }
+            let mut r: f64 = 0.08;
+            let mut g: f64 = 0.08;
+            let mut b: f64 = 0.10;
+            if bi == 0 { r = 0.92; g = 0.92; b = 0.92; }
+            else if bi == 1 { r = 0.90; g = 0.88; b = 0.12; }
+            else if bi == 2 { r = 0.10; g = 0.86; b = 0.88; }
+            else if bi == 3 { r = 0.14; g = 0.82; b = 0.16; }
+            else if bi == 4 { r = 0.84; g = 0.14; b = 0.84; }
+            else if bi == 5 { r = 0.86; g = 0.12; b = 0.14; }
+            else if bi == 6 { r = 0.12; g = 0.16; b = 0.86; }
+            if y >= h - 8 {
+                let v: f64 = if ((x / 2) % 2) == 0 { 0.88 } else { 0.12 };
+                r = v; g = v * 0.95; b = v * 0.9;
+            }
+            src.push(r as f32); src.push(g as f32); src.push(b as f32); src.push(1.0 as f32);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    src
+}
+
+pub fn run_vhs_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let w: i32 = 64;
+    let h: i32 = 32;
+    let src: Vec<f32> = m36_make_color_bars(w, h);
+    let pl_sp: M36VhsPlan = m36_resolve(0, w, h);
+    let pl_lp: M36VhsPlan = m36_resolve(1, w, h);
+    let pl_ep: M36VhsPlan = m36_resolve(2, w, h);
+    let pl_thr: M36VhsPlan = m36_resolve(3, w, h);
+    let pl_ctrl: M36VhsPlan = m36_resolve(4, w, h);
+
+    let h_sp: u64 = m36_hash_vhs(&pl_sp, &src, 2, kit::fnv_start());
+    let h_lp: u64 = m36_hash_vhs(&pl_lp, &src, 5, kit::fnv_start());
+    let h_ep: u64 = m36_hash_vhs(&pl_ep, &src, 11, kit::fnv_start());
+    let h_thr: u64 = m36_hash_vhs(&pl_thr, &src, 7, kit::fnv_start());
+    let h_ctrl: u64 = m36_hash_vhs(&pl_ctrl, &src, 11, kit::fnv_start());
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m36_hash_vhs(&pl_sp, &src, 2, h_all);
+    h_all = m36_hash_vhs(&pl_lp, &src, 5, h_all);
+    h_all = m36_hash_vhs(&pl_ep, &src, 11, h_all);
+    h_all = m36_hash_vhs(&pl_thr, &src, 7, h_all);
+
+    (h_sp, h_lp, h_ep, h_thr, h_all, h_ctrl)
+}

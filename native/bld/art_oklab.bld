@@ -1,0 +1,343 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #31: Perceptual OKLab Color Space and 13 Retro Hardware Palettes
+// Bit-exact 0-ULP port of native/src/renderer/style_oklab.cpp:
+// IEC 61966-2-1 sRGB/linear transfers, Ottosson OKLab forward/inverse cube-root transforms,
+// all 13 classic hardware/CRT retro palettes (121 entries), and perceptual OKLab Euclidean
+// nearest-index quantization vs naive sRGB Euclidean control.
+
+
+pub struct M31PalEntry {
+    l: f64,
+    a: f64,
+    b: f64,
+    r: i32,
+    g: i32,
+    bl: i32,
+}
+
+fn m31_srgb_to_linear_c(c: f64) -> f64 {
+    if c <= 0.04045 { return c / 12.92; }
+    pow((c + 0.055) / 1.055, 2.4)
+}
+
+fn m31_linear_to_srgb_c(c: f64) -> f64 {
+    if c <= 0.0031308 { return 12.92 * c; }
+    1.055 * pow(c, 1.0 / 2.4) - 0.055
+}
+
+fn m31_srgb8_to_linear(k: i32) -> f64 {
+    m31_srgb_to_linear_c((k as f64) / 255.0)
+}
+
+fn m31_linear_to_oklab(r: f64, g: f64, b: f64) -> (f64, f64, f64) {
+    let l: f64 = cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+    let m: f64 = cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+    let s: f64 = cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    let ol: f64 = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+    let oa: f64 = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s;
+    let ob: f64 = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s;
+    (ol, oa, ob)
+}
+
+fn m31_oklab_to_linear(ol: f64, oa: f64, ob: f64) -> (f64, f64, f64) {
+    let l0: f64 = ol + 0.3963377774 * oa + 0.2158037573 * ob;
+    let m0: f64 = ol - 0.1055613458 * oa - 0.0638541728 * ob;
+    let s0: f64 = ol - 0.0894841775 * oa - 1.2914855480 * ob;
+    let l: f64 = l0 * l0 * l0;
+    let m: f64 = m0 * m0 * m0;
+    let s: f64 = s0 * s0 * s0;
+    let r: f64 = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+    let g: f64 = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+    let b: f64 = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+    (r, g, b)
+}
+
+fn m31_srgb_to_oklab(r: f64, g: f64, b: f64) -> (f64, f64, f64) {
+    m31_linear_to_oklab(m31_srgb_to_linear_c(r), m31_srgb_to_linear_c(g), m31_srgb_to_linear_c(b))
+}
+
+fn m31_cl01(x: f64) -> f64 {
+    if x < 0.0 { return 0.0; }
+    if x > 1.0 { return 1.0; }
+    x
+}
+
+fn m31_oklab_to_srgb(ol: f64, oa: f64, ob: f64) -> (f64, f64, f64) {
+    let (r, g, b) = m31_oklab_to_linear(ol, oa, ob);
+    (
+        m31_cl01(m31_linear_to_srgb_c(r)),
+        m31_cl01(m31_linear_to_srgb_c(g)),
+        m31_cl01(m31_linear_to_srgb_c(b)),
+    )
+}
+
+fn m31_push_rgb(pal: &mut Vec<M31PalEntry>, r: i32, g: i32, bl: i32) {
+    let (ol, oa, ob) = m31_srgb_to_oklab((r as f64) / 255.0, (g as f64) / 255.0, (bl as f64) / 255.0);
+    pal.push(M31PalEntry { l: ol, a: oa, b: ob, r: r, g: g, bl: bl });
+}
+
+fn m31_palette(id: i32) -> Vec<M31PalEntry> {
+    let mut p: Vec<M31PalEntry> = Vec::new();
+    if id == 0 {
+        // gameboy
+        m31_push_rgb(&mut p, 15, 56, 15);
+        m31_push_rgb(&mut p, 48, 98, 48);
+        m31_push_rgb(&mut p, 139, 172, 15);
+        m31_push_rgb(&mut p, 155, 188, 15);
+    } else if id == 1 {
+        // cga
+        m31_push_rgb(&mut p, 0, 0, 0);
+        m31_push_rgb(&mut p, 0, 255, 255);
+        m31_push_rgb(&mut p, 255, 0, 255);
+        m31_push_rgb(&mut p, 255, 255, 255);
+    } else if id == 2 {
+        // ega
+        m31_push_rgb(&mut p, 0, 0, 0); m31_push_rgb(&mut p, 0, 0, 170);
+        m31_push_rgb(&mut p, 0, 170, 0); m31_push_rgb(&mut p, 0, 170, 170);
+        m31_push_rgb(&mut p, 170, 0, 0); m31_push_rgb(&mut p, 170, 0, 170);
+        m31_push_rgb(&mut p, 170, 85, 0); m31_push_rgb(&mut p, 170, 170, 170);
+        m31_push_rgb(&mut p, 85, 85, 85); m31_push_rgb(&mut p, 85, 85, 255);
+        m31_push_rgb(&mut p, 85, 255, 85); m31_push_rgb(&mut p, 85, 255, 255);
+        m31_push_rgb(&mut p, 255, 85, 85); m31_push_rgb(&mut p, 255, 85, 255);
+        m31_push_rgb(&mut p, 255, 255, 85); m31_push_rgb(&mut p, 255, 255, 255);
+    } else if id == 3 {
+        // c64
+        m31_push_rgb(&mut p, 0, 0, 0); m31_push_rgb(&mut p, 255, 255, 255);
+        m31_push_rgb(&mut p, 136, 0, 0); m31_push_rgb(&mut p, 170, 255, 238);
+        m31_push_rgb(&mut p, 204, 68, 204); m31_push_rgb(&mut p, 0, 204, 85);
+        m31_push_rgb(&mut p, 0, 0, 170); m31_push_rgb(&mut p, 238, 238, 119);
+        m31_push_rgb(&mut p, 221, 136, 85); m31_push_rgb(&mut p, 102, 68, 0);
+        m31_push_rgb(&mut p, 255, 119, 119); m31_push_rgb(&mut p, 51, 51, 51);
+        m31_push_rgb(&mut p, 119, 119, 119); m31_push_rgb(&mut p, 170, 255, 102);
+        m31_push_rgb(&mut p, 0, 136, 255); m31_push_rgb(&mut p, 187, 187, 187);
+    } else if id == 4 {
+        // pico8
+        m31_push_rgb(&mut p, 0, 0, 0); m31_push_rgb(&mut p, 29, 43, 83);
+        m31_push_rgb(&mut p, 126, 37, 83); m31_push_rgb(&mut p, 0, 135, 81);
+        m31_push_rgb(&mut p, 171, 82, 54); m31_push_rgb(&mut p, 95, 87, 79);
+        m31_push_rgb(&mut p, 194, 195, 199); m31_push_rgb(&mut p, 255, 241, 232);
+        m31_push_rgb(&mut p, 255, 0, 77); m31_push_rgb(&mut p, 255, 163, 0);
+        m31_push_rgb(&mut p, 255, 236, 39); m31_push_rgb(&mut p, 0, 228, 54);
+        m31_push_rgb(&mut p, 41, 173, 255); m31_push_rgb(&mut p, 131, 118, 156);
+        m31_push_rgb(&mut p, 255, 119, 168); m31_push_rgb(&mut p, 255, 204, 170);
+    } else if id == 5 {
+        // outrun
+        m31_push_rgb(&mut p, 10, 6, 20); m31_push_rgb(&mut p, 26, 12, 48);
+        m31_push_rgb(&mut p, 64, 20, 96); m31_push_rgb(&mut p, 180, 32, 120);
+        m31_push_rgb(&mut p, 255, 78, 160); m31_push_rgb(&mut p, 255, 138, 96);
+        m31_push_rgb(&mut p, 80, 220, 240); m31_push_rgb(&mut p, 244, 236, 255);
+    } else if id == 6 {
+        // aurora
+        m31_push_rgb(&mut p, 10, 10, 18); m31_push_rgb(&mut p, 16, 40, 44);
+        m31_push_rgb(&mut p, 24, 84, 72); m31_push_rgb(&mut p, 52, 180, 120);
+        m31_push_rgb(&mut p, 120, 230, 180); m31_push_rgb(&mut p, 90, 120, 220);
+        m31_push_rgb(&mut p, 190, 90, 210); m31_push_rgb(&mut p, 245, 240, 255);
+    } else if id == 7 {
+        // nes
+        m31_push_rgb(&mut p, 0, 0, 0); m31_push_rgb(&mut p, 0, 0, 188);
+        m31_push_rgb(&mut p, 0, 120, 248); m31_push_rgb(&mut p, 104, 68, 252);
+        m31_push_rgb(&mut p, 216, 0, 204); m31_push_rgb(&mut p, 248, 56, 0);
+        m31_push_rgb(&mut p, 248, 152, 0); m31_push_rgb(&mut p, 248, 216, 120);
+        m31_push_rgb(&mut p, 0, 168, 0); m31_push_rgb(&mut p, 0, 168, 136);
+        m31_push_rgb(&mut p, 248, 120, 248); m31_push_rgb(&mut p, 124, 124, 124);
+        m31_push_rgb(&mut p, 188, 188, 188); m31_push_rgb(&mut p, 236, 238, 236);
+    } else if id == 8 {
+        // zx
+        m31_push_rgb(&mut p, 0, 0, 0); m31_push_rgb(&mut p, 0, 0, 215);
+        m31_push_rgb(&mut p, 215, 0, 0); m31_push_rgb(&mut p, 215, 0, 215);
+        m31_push_rgb(&mut p, 0, 215, 0); m31_push_rgb(&mut p, 0, 215, 215);
+        m31_push_rgb(&mut p, 215, 215, 0); m31_push_rgb(&mut p, 215, 215, 215);
+        m31_push_rgb(&mut p, 0, 0, 255); m31_push_rgb(&mut p, 255, 0, 0);
+        m31_push_rgb(&mut p, 255, 0, 255); m31_push_rgb(&mut p, 0, 255, 0);
+        m31_push_rgb(&mut p, 0, 255, 255); m31_push_rgb(&mut p, 255, 255, 0);
+        m31_push_rgb(&mut p, 255, 255, 255);
+    } else if id == 9 {
+        // teletext
+        m31_push_rgb(&mut p, 0, 0, 0); m31_push_rgb(&mut p, 255, 0, 0);
+        m31_push_rgb(&mut p, 0, 255, 0); m31_push_rgb(&mut p, 255, 255, 0);
+        m31_push_rgb(&mut p, 0, 0, 255); m31_push_rgb(&mut p, 255, 0, 255);
+        m31_push_rgb(&mut p, 0, 255, 255); m31_push_rgb(&mut p, 255, 255, 255);
+    } else if id == 10 {
+        // vboy
+        m31_push_rgb(&mut p, 0, 0, 0); m31_push_rgb(&mut p, 85, 0, 0);
+        m31_push_rgb(&mut p, 170, 0, 0); m31_push_rgb(&mut p, 255, 0, 0);
+    } else if id == 11 {
+        // amber
+        m31_push_rgb(&mut p, 8, 5, 0); m31_push_rgb(&mut p, 78, 44, 0);
+        m31_push_rgb(&mut p, 178, 108, 12); m31_push_rgb(&mut p, 255, 186, 84);
+    } else {
+        // mono1
+        m31_push_rgb(&mut p, 8, 8, 12); m31_push_rgb(&mut p, 236, 236, 232);
+    }
+    p
+}
+
+fn m31_nearest_index(ol: f64, oa: f64, ob: f64, pal: &Vec<M31PalEntry>) -> i32 {
+    let n: i32 = pal.len() as i32;
+    let mut best: i32 = 0;
+    let mut best_d: f64 = 1.0e30;
+    let mut i: i32 = 0;
+    while i < n {
+        let dl: f64 = ol - pal[i].l;
+        let da: f64 = oa - pal[i].a;
+        let db: f64 = ob - pal[i].b;
+        let d: f64 = dl * dl + da * da + db * db;
+        if d < best_d {
+            best_d = d;
+            best = i;
+        }
+        i = i + 1;
+    }
+    best
+}
+
+fn m31_nearest_srgb_ctrl(r: f64, g: f64, b: f64, pal: &Vec<M31PalEntry>) -> i32 {
+    let n: i32 = pal.len() as i32;
+    let mut best: i32 = 0;
+    let mut best_d: f64 = 1.0e30;
+    let mut i: i32 = 0;
+    while i < n {
+        let dr: f64 = r - (pal[i].r as f64) / 255.0;
+        let dg: f64 = g - (pal[i].g as f64) / 255.0;
+        let db: f64 = b - (pal[i].bl as f64) / 255.0;
+        let d: f64 = dr * dr + dg * dg + db * db;
+        if d < best_d {
+            best_d = d;
+            best = i;
+        }
+        i = i + 1;
+    }
+    best
+}
+
+fn m31_quant_cube_oklab(pal: &Vec<M31PalEntry>, h0: u64) -> u64 {
+    let mut h: u64 = h0;
+    let mut ri: i32 = 0;
+    while ri < 6 {
+        let mut gi: i32 = 0;
+        while gi < 6 {
+            let mut bi: i32 = 0;
+            while bi < 6 {
+                let (ol, oa, ob) = m31_srgb_to_oklab(
+                    (ri as f64) / 5.0, (gi as f64) / 5.0, (bi as f64) / 5.0
+                );
+                let idx: i32 = m31_nearest_index(ol, oa, ob, pal);
+                h = kit::fnv_u8(h, idx as u64);
+                bi = bi + 1;
+            }
+            gi = gi + 1;
+        }
+        ri = ri + 1;
+    }
+    h
+}
+
+fn m31_quant_cube_ctrl(pal: &Vec<M31PalEntry>, h0: u64) -> u64 {
+    let mut h: u64 = h0;
+    let mut ri: i32 = 0;
+    while ri < 6 {
+        let mut gi: i32 = 0;
+        while gi < 6 {
+            let mut bi: i32 = 0;
+            while bi < 6 {
+                let idx: i32 = m31_nearest_srgb_ctrl(
+                    (ri as f64) / 5.0, (gi as f64) / 5.0, (bi as f64) / 5.0, pal
+                );
+                h = kit::fnv_u8(h, idx as u64);
+                bi = bi + 1;
+            }
+            gi = gi + 1;
+        }
+        ri = ri + 1;
+    }
+    h
+}
+
+pub fn run_oklab_parity() -> (u64, u64, u64, u64, u64, u64) {
+    // Pass 1: srgb8ToLinear + linearToSrgbC + 9x9x9 roundtrip
+    let mut h_xfer: u64 = kit::fnv_start();
+    let mut h_all: u64 = kit::fnv_start();
+    let mut k: i32 = 0;
+    while k < 256 {
+        let lin: f64 = m31_srgb8_to_linear(k);
+        let back: f64 = m31_linear_to_srgb_c(lin);
+        h_xfer = kit::fnv_f32(h_xfer, lin);
+        h_xfer = kit::fnv_f32(h_xfer, back);
+        h_all = kit::fnv_f32(h_all, lin);
+        h_all = kit::fnv_f32(h_all, back);
+        k = k + 1;
+    }
+    let mut ri: i32 = 0;
+    while ri < 9 {
+        let mut gi: i32 = 0;
+        while gi < 9 {
+            let mut bi: i32 = 0;
+            while bi < 9 {
+                let (ol, oa, ob) = m31_srgb_to_oklab(
+                    (ri as f64) / 8.0, (gi as f64) / 8.0, (bi as f64) / 8.0
+                );
+                let (br, bg, bb) = m31_oklab_to_srgb(ol, oa, ob);
+                h_xfer = kit::fnv_f32(h_xfer, ol);
+                h_xfer = kit::fnv_f32(h_xfer, oa + 1.0);
+                h_xfer = kit::fnv_f32(h_xfer, ob + 1.0);
+                h_xfer = kit::fnv_u8(h_xfer, floor(br * 255.0 + 0.5) as u64);
+                h_xfer = kit::fnv_u8(h_xfer, floor(bg * 255.0 + 0.5) as u64);
+                h_xfer = kit::fnv_u8(h_xfer, floor(bb * 255.0 + 0.5) as u64);
+                bi = bi + 1;
+            }
+            gi = gi + 1;
+        }
+        ri = ri + 1;
+    }
+
+    // Pass 2: all 13 retro palettes
+    let mut h_pals: u64 = kit::fnv_start();
+    let mut pid: i32 = 0;
+    while pid < 13 {
+        let pal: Vec<M31PalEntry> = m31_palette(pid);
+        let np: i32 = pal.len() as i32;
+        let mut i: i32 = 0;
+        while i < np {
+            h_pals = kit::fnv_f32(h_pals, pal[i].l);
+            h_pals = kit::fnv_f32(h_pals, pal[i].a + 1.0);
+            h_pals = kit::fnv_f32(h_pals, pal[i].b + 1.0);
+            h_all = kit::fnv_f32(h_all, pal[i].l);
+            h_all = kit::fnv_f32(h_all, pal[i].a + 1.0);
+            h_all = kit::fnv_f32(h_all, pal[i].b + 1.0);
+            i = i + 1;
+        }
+        pid = pid + 1;
+    }
+
+    // Pass 3: hardware palettes (0,1,2,3,4,7,8) + naive sRGB control
+    let mut hw_ids: Vec<i32> = Vec::new();
+    hw_ids.push(0); hw_ids.push(1); hw_ids.push(2); hw_ids.push(3);
+    hw_ids.push(4); hw_ids.push(7); hw_ids.push(8);
+    let mut h_hw: u64 = kit::fnv_start();
+    let mut h_ctrl: u64 = kit::fnv_start();
+    let mut hi: i32 = 0;
+    while hi < 7 {
+        let pal: Vec<M31PalEntry> = m31_palette(hw_ids[hi]);
+        h_hw = m31_quant_cube_oklab(&pal, h_hw);
+        h_all = m31_quant_cube_oklab(&pal, h_all);
+        h_ctrl = m31_quant_cube_ctrl(&pal, h_ctrl);
+        hi = hi + 1;
+    }
+
+    // Pass 4: CRT/display palettes (5,6,9,10,11,12)
+    let mut crt_ids: Vec<i32> = Vec::new();
+    crt_ids.push(5); crt_ids.push(6); crt_ids.push(9);
+    crt_ids.push(10); crt_ids.push(11); crt_ids.push(12);
+    let mut h_crt: u64 = kit::fnv_start();
+    let mut ci: i32 = 0;
+    while ci < 6 {
+        let pal: Vec<M31PalEntry> = m31_palette(crt_ids[ci]);
+        h_crt = m31_quant_cube_oklab(&pal, h_crt);
+        h_all = m31_quant_cube_oklab(&pal, h_all);
+        ci = ci + 1;
+    }
+
+    (h_xfer, h_pals, h_hw, h_crt, h_all, h_ctrl)
+}

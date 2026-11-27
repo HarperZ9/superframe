@@ -1,0 +1,439 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #26: Physical CRT Faceplate Glass Optics & Soft-Knee Display Encode
+// Bit-exact 0-ULP port of native/src/renderer/style_crt_glass.cpp + faceAt from style_crt_beam.cpp:
+// internal glass-reflection halo downsample/convolve/bilinear-upsample, phosphor chromaticity
+// gamut fitting, curved-glass air-to-glass Fresnel room reflection, bezel compositing, and
+// soft-knee tanh + sRGB 8-bit display encode (crtEncode8).
+
+
+pub struct M26GlassPlan {
+    out_w: i32,
+    out_h: i32,
+    rx: f64,
+    ry: f64,
+    transmission: f64,
+    reflection: f64,
+    ambient: f64,
+    glass_n: f64,
+    cx: f64,
+    cy: f64,
+    bezel0: f64,
+    bezel1: f64,
+    bezel2: f64,
+    distance: f64,
+    view_w: f64,
+    view_h: f64,
+    m0: f64, m1: f64, m2: f64,
+    m3: f64, m4: f64, m5: f64,
+    m6: f64, m7: f64, m8: f64,
+    halo_q: i32,
+    halo_r: i32,
+    halo_direct: f64,
+    halo_weights: Vec<f32>,
+}
+
+fn m26_min_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn m26_max_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn m26_abs_d(x: f64) -> f64 {
+    if x < 0.0 { return -x; }
+    x
+}
+
+fn m26_min_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn m26_hypot3(x: f64, y: f64, z: f64) -> f64 {
+    sqrt(x * x + y * y + z * z)
+}
+
+fn m26_face_at(plan: &M26GlassPlan, px: f64, py: f64) -> (f64, f64) {
+    let x: f64 = (px - (plan.out_w as f64) / 2.0) * (plan.view_w / (plan.out_w as f64)) + plan.cx;
+    let y: f64 = (py - (plan.out_h as f64) / 2.0) * (plan.view_h / (plan.out_h as f64)) + plan.cy;
+    let d: f64 = plan.distance;
+    let a: f64 = (x * x) / (2.0 * plan.rx) + (y * y) / (2.0 * plan.ry);
+    let t: f64 = (2.0 * d) / (d + sqrt(m26_max_d(0.0, d * d - 4.0 * a * d)));
+    (t * x, t * y)
+}
+
+fn m26_halo_down(plan: &M26GlassPlan, em: &Vec<f32>) -> Vec<f32> {
+    let q: i32 = plan.halo_q;
+    let w: i32 = plan.out_w;
+    let h: i32 = plan.out_h;
+    let gw: i32 = (w + q - 1) / q;
+    let gh: i32 = (h + q - 1) / q;
+    let mut g: Vec<f32> = Vec::new();
+    let total: i32 = gw * gh * 4;
+    let mut z: i32 = 0;
+    while z < total {
+        g.push(0.0 as f32);
+        z = z + 1;
+    }
+    let mut gy: i32 = 0;
+    while gy < gh {
+        let mut gx: i32 = 0;
+        while gx < gw {
+            let mut r: f64 = 0.0;
+            let mut gg: f64 = 0.0;
+            let mut b: f64 = 0.0;
+            let mut n: i32 = 0;
+            let y_end: i32 = m26_min_i(h, gy * q + q);
+            let x_end: i32 = m26_min_i(w, gx * q + q);
+            let mut y: i32 = gy * q;
+            while y < y_end {
+                let mut x: i32 = gx * q;
+                while x < x_end {
+                    let i: i32 = (y * w + x) * 4;
+                    r = r + (em[i] as f64);
+                    gg = gg + (em[i + 1] as f64);
+                    b = b + (em[i + 2] as f64);
+                    n = n + 1;
+                    x = x + 1;
+                }
+                y = y + 1;
+            }
+            let o: i32 = (gy * gw + gx) * 4;
+            let nf: f64 = n as f64;
+            let r_avg: f64 = r / nf;
+            let g_avg: f64 = gg / nf;
+            let b_avg: f64 = b / nf;
+            g[o] = r_avg as f32;
+            g[o + 1] = g_avg as f32;
+            g[o + 2] = b_avg as f32;
+            gx = gx + 1;
+        }
+        gy = gy + 1;
+    }
+    g
+}
+
+fn m26_halo_conv(plan: &M26GlassPlan, g: &Vec<f32>) -> Vec<f32> {
+    let rad: i32 = plan.halo_r;
+    let s: i32 = 2 * rad + 1;
+    let q: i32 = plan.halo_q;
+    let gw: i32 = (plan.out_w + q - 1) / q;
+    let gh: i32 = (plan.out_h + q - 1) / q;
+    let mut o: Vec<f32> = Vec::new();
+    let total: i32 = gw * gh * 4;
+    let mut z: i32 = 0;
+    while z < total {
+        o.push(0.0 as f32);
+        z = z + 1;
+    }
+    let mut y: i32 = 0;
+    while y < gh {
+        let mut x: i32 = 0;
+        while x < gw {
+            let mut r: f64 = 0.0;
+            let mut gg: f64 = 0.0;
+            let mut b: f64 = 0.0;
+            let mut dy: i32 = -rad;
+            while dy <= rad {
+                let yy: i32 = y + dy;
+                if yy >= 0 && yy < gh {
+                    let mut dx: i32 = -rad;
+                    while dx <= rad {
+                        let xx: i32 = x + dx;
+                        if xx >= 0 && xx < gw {
+                            let wv: f64 = plan.halo_weights[(dy + rad) * s + dx + rad] as f64;
+                            let idx: i32 = (yy * gw + xx) * 4;
+                            r = r + wv * (g[idx] as f64);
+                            gg = gg + wv * (g[idx + 1] as f64);
+                            b = b + wv * (g[idx + 2] as f64);
+                        }
+                        dx = dx + 1;
+                    }
+                }
+                dy = dy + 1;
+            }
+            let out_i: i32 = (y * gw + x) * 4;
+            o[out_i] = r as f32;
+            o[out_i + 1] = gg as f32;
+            o[out_i + 2] = b as f32;
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    o
+}
+
+fn m26_halo_at(plan: &M26GlassPlan, h_buf: &Vec<f32>, px: i32, py: i32) -> (f64, f64, f64) {
+    let q: i32 = plan.halo_q;
+    let gw: i32 = (plan.out_w + q - 1) / q;
+    let gh: i32 = (plan.out_h + q - 1) / q;
+    let fx: f64 = m26_min_d((gw - 1) as f64, m26_max_d(0.0, ((px as f64) + 0.5) / (q as f64) - 0.5));
+    let fy: f64 = m26_min_d((gh - 1) as f64, m26_max_d(0.0, ((py as f64) + 0.5) / (q as f64) - 0.5));
+    let x0: i32 = floor(fx) as i32;
+    let y0: i32 = floor(fy) as i32;
+    let x1: i32 = m26_min_i(gw - 1, x0 + 1);
+    let y1: i32 = m26_min_i(gh - 1, y0 + 1);
+    let tx: f64 = fx - (x0 as f64);
+    let ty: f64 = fy - (y0 as f64);
+    let i00: i32 = (y0 * gw + x0) * 4;
+    let i10: i32 = (y0 * gw + x1) * 4;
+    let i01: i32 = (y1 * gw + x0) * 4;
+    let i11: i32 = (y1 * gw + x1) * 4;
+    let c0: f64 = ((h_buf[i00] as f64) * (1.0 - tx) + (h_buf[i10] as f64) * tx) * (1.0 - ty)
+        + ((h_buf[i01] as f64) * (1.0 - tx) + (h_buf[i11] as f64) * tx) * ty;
+    let c1: f64 = ((h_buf[i00 + 1] as f64) * (1.0 - tx) + (h_buf[i10 + 1] as f64) * tx) * (1.0 - ty)
+        + ((h_buf[i01 + 1] as f64) * (1.0 - tx) + (h_buf[i11 + 1] as f64) * tx) * ty;
+    let c2: f64 = ((h_buf[i00 + 2] as f64) * (1.0 - tx) + (h_buf[i10 + 2] as f64) * tx) * (1.0 - ty)
+        + ((h_buf[i01 + 2] as f64) * (1.0 - tx) + (h_buf[i11 + 2] as f64) * tx) * ty;
+    (c0, c1, c2)
+}
+
+fn m26_room_env(dx: f64, dy: f64, dz: f64) -> f64 {
+    let c: f64 = dx * (-0.38) + dy * (-0.33) + dz * (-0.864);
+    let t: f64 = m26_min_d(1.0, m26_max_d(0.0, (c - 0.975) / 0.02));
+    0.04 + t * t * (3.0 - 2.0 * t)
+}
+
+fn m26_fresnel_air(n: f64, theta: f64) -> f64 {
+    let s: f64 = sin(theta) / n;
+    let ci: f64 = cos(theta);
+    let ct: f64 = sqrt(1.0 - s * s);
+    let rs: f64 = (ci - n * ct) / (ci + n * ct);
+    let rp: f64 = (ct - n * ci) / (ct + n * ci);
+    0.5 * (rs * rs + rp * rp)
+}
+
+fn m26_glass_reflection(plan: &M26GlassPlan, sx: f64, sy: f64) -> f64 {
+    let rx: f64 = plan.rx;
+    let ry: f64 = plan.ry;
+    let d_dist: f64 = plan.distance;
+    let sz: f64 = (sx * sx) / (2.0 * rx) + (sy * sy) / (2.0 * ry);
+    let il: f64 = m26_hypot3(sx, sy, sz + d_dist);
+    let ix: f64 = sx / il;
+    let iy: f64 = sy / il;
+    let iz: f64 = (sz + d_dist) / il;
+    let nx0: f64 = sx / rx;
+    let ny0: f64 = sy / ry;
+    let nz0: f64 = -1.0;
+    let nl: f64 = m26_hypot3(nx0, ny0, nz0);
+    let nx: f64 = nx0 / nl;
+    let ny: f64 = ny0 / nl;
+    let nz: f64 = nz0 / nl;
+    let dp: f64 = ix * nx + iy * ny + iz * nz;
+    let fr: f64 = m26_fresnel_air(plan.glass_n, acos(m26_min_d(1.0, m26_abs_d(dp))));
+    fr * m26_room_env(ix - 2.0 * dp * nx, iy - 2.0 * dp * ny, iz - 2.0 * dp * nz)
+}
+
+fn m26_gamut_fit(r: f64, g: f64, b: f64) -> (f64, f64, f64) {
+    let y_lum: f64 = m26_max_d(0.0, 0.2126 * r + 0.7152 * g + 0.0722 * b);
+    let m: f64 = m26_min_d(r, m26_min_d(g, b));
+    if m >= 0.0 {
+        return (r, g, b);
+    }
+    let t: f64 = y_lum / (y_lum - m);
+    (y_lum + t * (r - y_lum), y_lum + t * (g - y_lum), y_lum + t * (b - y_lum))
+}
+
+pub fn m26_crt_glass(plan: &M26GlassPlan, em: &Vec<f32>) -> Vec<f32> {
+    let w: i32 = plan.out_w;
+    let h: i32 = plan.out_h;
+    let down: Vec<f32> = m26_halo_down(plan, em);
+    let halo: Vec<f32> = m26_halo_conv(plan, &down);
+    let trans: f64 = plan.transmission;
+    let mut img: Vec<f32> = Vec::new();
+    let total: i32 = w * h * 4;
+    let mut z: i32 = 0;
+    while z < total {
+        img.push(0.0 as f32);
+        z = z + 1;
+    }
+    let mut py: i32 = 0;
+    while py < h {
+        let mut px: i32 = 0;
+        while px < w {
+            let idx: i32 = (py * w + px) * 4;
+            let a: f64 = em[idx + 3] as f64;
+            let (sx, sy) = m26_face_at(plan, (px as f64) + 0.5, (py as f64) + 0.5);
+            let (hl0, hl1, hl2) = m26_halo_at(plan, &halo, px, py);
+            let g0: f64 = plan.halo_direct * (em[idx] as f64) + hl0;
+            let g1: f64 = plan.halo_direct * (em[idx + 1] as f64) + hl1;
+            let g2: f64 = plan.halo_direct * (em[idx + 2] as f64) + hl2;
+            let c0: f64 = plan.m0 * g0 + plan.m1 * g1 + plan.m2 * g2;
+            let c1: f64 = plan.m3 * g0 + plan.m4 * g1 + plan.m5 * g2;
+            let c2: f64 = plan.m6 * g0 + plan.m7 * g1 + plan.m8 * g2;
+            let (r_fit, g_fit, b_fit) = m26_gamut_fit(c0, c1, c2);
+            let black: f64 = plan.ambient * trans;
+            let spec: f64 = plan.reflection * m26_glass_reflection(plan, sx, sy);
+            let out0: f64 = a * (r_fit + black + spec) + (1.0 - a) * plan.bezel0;
+            let out1: f64 = a * (g_fit + black + spec) + (1.0 - a) * plan.bezel1;
+            let out2: f64 = a * (b_fit + black + spec) + (1.0 - a) * plan.bezel2;
+            img[idx] = out0 as f32;
+            img[idx + 1] = out1 as f32;
+            img[idx + 2] = out2 as f32;
+            img[idx + 3] = 1.0 as f32;
+            px = px + 1;
+        }
+        py = py + 1;
+    }
+    img
+}
+
+pub fn m26_crt_encode8(v: f64, exposure: f64) -> u64 {
+    let mut l: f64 = m26_max_d(0.0, v * exposure);
+    let k: f64 = 0.8;
+    if l > k {
+        let u: f64 = (l - k) / (1.0 - k);
+        let ep: f64 = exp(2.0 * u);
+        let th: f64 = (ep - 1.0) / (ep + 1.0);
+        l = k + (1.0 - k) * th;
+    }
+    let lin_s: f64 = if l <= 0.0031308 {
+        l * 12.92
+    } else {
+        1.055 * pow(l, 1.0 / 2.4) - 0.055
+    };
+    let s: f64 = lin_s * 255.0;
+    let r: f64 = floor(s + 0.5);
+    m26_min_d(255.0, m26_max_d(0.0, r)) as u64
+}
+
+fn m26_make_plan(w: i32, h: i32, rx: f64, ry: f64, trans: f64, refl: f64, amb: f64) -> M26GlassPlan {
+    let face_w: f64 = 406.4;
+    let face_h: f64 = 304.8;
+    let dist: f64 = 4.0 * face_h;
+    let view_w: f64 = face_w * 1.08;
+    let view_h: f64 = view_w * ((h as f64) / (w as f64));
+    let rad: i32 = 3;
+    let s: i32 = 2 * rad + 1;
+    let mut raw_w: Vec<f32> = Vec::new();
+    let mut z: i32 = 0;
+    while z < s * s {
+        raw_w.push(0.0 as f32);
+        z = z + 1;
+    }
+    let mut sum: f64 = 0.0;
+    let mut dy: i32 = -rad;
+    while dy <= rad {
+        let mut dx: i32 = -rad;
+        while dx <= rad {
+            if !(dx == 0 && dy == 0) {
+                let d2: f64 = (dx * dx + dy * dy) as f64;
+                let val: f64 = exp(-0.35 * (d2 - 2.0) * (d2 - 2.0) / 9.0) / (1.0 + d2);
+                raw_w[(dy + rad) * s + (dx + rad)] = val as f32;
+                sum = sum + val;
+            }
+            dx = dx + 1;
+        }
+        dy = dy + 1;
+    }
+    let halo_share: f64 = 0.085;
+    let mut weights: Vec<f32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < s * s {
+        let wn: f64 = ((raw_w[i] as f64) / sum) * halo_share;
+        weights.push(wn as f32);
+        i = i + 1;
+    }
+    M26GlassPlan {
+        out_w: w, out_h: h, rx: rx, ry: ry,
+        transmission: trans, reflection: refl, ambient: amb, glass_n: 1.52,
+        cx: 0.0, cy: 0.0, bezel0: 0.035, bezel1: 0.034, bezel2: 0.033,
+        distance: dist, view_w: view_w, view_h: view_h,
+        m0: 1.065, m1: -0.055, m2: -0.010,
+        m3: -0.025, m4: 1.045, m5: -0.020,
+        m6: -0.012, m7: -0.038, m8: 1.050,
+        halo_q: 2, halo_r: rad, halo_direct: 1.0 - halo_share,
+        halo_weights: weights,
+    }
+}
+
+fn m26_make_emission(w: i32, h: i32) -> Vec<f32> {
+    let mut em: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let fx: f64 = ((x as f64) + 0.5) / (w as f64);
+            let fy: f64 = ((y as f64) + 0.5) / (h as f64);
+            let mut r: f64 = 0.04 + 0.90 * fx;
+            let mut g: f64 = 0.02 + 0.70 * fy;
+            let mut b: f64 = 0.05 + 0.85 * (1.0 - fx);
+            if x >= 18 && x <= 29 && y >= 10 && y <= 20 {
+                r = 1.35; g = 0.01; b = 0.02;
+            } else if x >= 6 && x <= 14 && y >= 6 && y <= 14 {
+                r = 0.01; g = 1.20; b = 0.01;
+            } else if x >= 34 && x <= 42 && y >= 16 && y <= 24 {
+                r = 0.001; g = 0.001; b = 0.002;
+            }
+            let mut a: f64 = 1.0;
+            if x == 0 || y == 0 || x == w - 1 || y == h - 1 {
+                a = 0.0;
+            } else if x == 1 || y == 1 || x == w - 2 || y == h - 2 {
+                a = 0.45;
+            }
+            em.push(r as f32);
+            em.push(g as f32);
+            em.push(b as f32);
+            em.push(a as f32);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    em
+}
+
+fn m26_hash_f32_vec(v: &Vec<f32>, h0: u64) -> u64 {
+    let n: i32 = v.len() as i32;
+    let mut h: u64 = h0;
+    let mut i: i32 = 0;
+    while i < n {
+        h = kit::fnv_f32(h, v[i] as f64);
+        i = i + 1;
+    }
+    h
+}
+
+pub fn run_crt_glass_parity() -> (u64, u64, u64, u64, u64) {
+    let w: i32 = 48;
+    let h: i32 = 32;
+    let em: Vec<f32> = m26_make_emission(w, h);
+    let pl_cyl: M26GlassPlan = m26_make_plan(w, h, 1600.0, 1.0e9, 0.70, 0.60, 0.004);
+    let pl_sph: M26GlassPlan = m26_make_plan(w, h, 810.0, 810.0, 0.46, 0.60, 0.008);
+    let pl_ctrl: M26GlassPlan = m26_make_plan(w, h, 1600.0, 1.0e9, 0.70, 0.0, 0.004);
+
+    let out_cyl: Vec<f32> = m26_crt_glass(&pl_cyl, &em);
+    let out_sph: Vec<f32> = m26_crt_glass(&pl_sph, &em);
+    let out_ctrl: Vec<f32> = m26_crt_glass(&pl_ctrl, &em);
+
+    let h_cyl: u64 = m26_hash_f32_vec(&out_cyl, kit::fnv_start());
+    let h_sph: u64 = m26_hash_f32_vec(&out_sph, kit::fnv_start());
+    let h_ctrl: u64 = m26_hash_f32_vec(&out_ctrl, kit::fnv_start());
+
+    let n_ch: i32 = out_cyl.len() as i32;
+    let mut h_enc: u64 = kit::fnv_start();
+    let mut i: i32 = 0;
+    while i < n_ch {
+        h_enc = kit::fnv_u8(h_enc, m26_crt_encode8(out_cyl[i] as f64, 1.25));
+        h_enc = kit::fnv_u8(h_enc, m26_crt_encode8(out_cyl[i + 1] as f64, 1.25));
+        h_enc = kit::fnv_u8(h_enc, m26_crt_encode8(out_cyl[i + 2] as f64, 1.25));
+        i = i + 4;
+    }
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m26_hash_f32_vec(&out_cyl, h_all);
+    h_all = m26_hash_f32_vec(&out_sph, h_all);
+    let mut j: i32 = 0;
+    while j < n_ch {
+        h_all = kit::fnv_u8(h_all, m26_crt_encode8(out_cyl[j] as f64, 1.25));
+        h_all = kit::fnv_u8(h_all, m26_crt_encode8(out_cyl[j + 1] as f64, 1.25));
+        h_all = kit::fnv_u8(h_all, m26_crt_encode8(out_cyl[j + 2] as f64, 1.25));
+        j = j + 4;
+    }
+
+    (h_cyl, h_sph, h_enc, h_all, h_ctrl)
+}
