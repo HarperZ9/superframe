@@ -1,5 +1,8 @@
 // Emit a hero street for the native frame: a .glb of the geometry, the lights and the views.
-//   node games/low-water/world/walk/build/hero/emit.mjs <world out dir> <out dir> [view name]
+//   node games/low-water/world/walk/build/hero/emit.mjs <world out dir> <out dir> [view name] [--wide]
+// --wide builds the whole town and the land round it (hscape.mjs): every house, a square ground grid
+// on the town, a frozen pond, woods, and the wide views (valley, hillside, overhead, oblique, ice, lane)
+// written as the frame file's "views"; the file names gain "-wide".
 // Reads the generated world (seed 20261118 by default; whatever the folder holds), plans the town
 // the view stands in (town.mjs), finds the view (play/viewpoints.mjs) and writes
 //   <out>/<view>.glb          the street at hero density (glb.mjs)
@@ -14,8 +17,12 @@ import * as town from "../town.mjs";
 import { viewpoints } from "../../../play/viewpoints.mjs";
 import { street, groundOf } from "./hstreet.mjs";
 import { writeGlb } from "./glb.mjs";
+import { findPond, findKnoll, pond, scatterTrees, vantages, bareTree } from "./hscape.mjs";
 
-const [worldDir, outDir, want = "hoarstead-main-street"] = process.argv.slice(2);
+const args = process.argv.slice(2), wideOn = args.includes("--wide");
+const [worldDir, outDir, want = "hoarstead-main-street"] = args.filter((a) => a !== "--wide");
+const outName = wideOn ? `${want}-wide` : want;
+function mulberry(seed) { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 if (!worldDir || !outDir) { console.error("usage: emit.mjs <world out dir> <out dir> [view name]"); process.exit(2); }
 const t0 = Date.now(), log = (m) => console.log(`${((Date.now() - t0) / 1000).toFixed(1)} s  ${m}`);
 const world = await loadWorldNode(worldDir);
@@ -25,8 +32,36 @@ const view = viewpoints({ world, roads, towns, ground: (x, z) => baseGround(worl
 if (!view) { console.error(`no viewpoint named ${want}`); process.exit(1); }
 const site = towns.find((t) => want.startsWith(t.s.name.toLowerCase()));
 log(`${want}: ${site.s.name}, ${site.plan.houses.length} houses, view at ${view.x.toFixed(1)}, ${view.z.toFixed(1)}`);
-const { M, L, O, houses, smoke } = street(world, site.plan, view);
+const wide = wideOn ? { half: site.plan.reach + 90, step: 0.9 } : null;
+if (wide) {
+  const g0 = (x, z) => groundOf(world, site.plan, [], x, z).g;
+  site.plan.pond = findPond(world, site.plan, g0);
+  site.plan.knoll = findKnoll(site.plan, g0);
+}
+const { M, L, O, H, houses, smoke } = street(world, site.plan, view, { wide });
 log(`${houses} houses built, ${M.triangles} triangles, ${L.length} lights`);
+let views = null;
+if (wide) {
+  const P = site.plan, groundY = (x, z) => {
+    if (Math.max(Math.abs(x - P.cx), Math.abs(z - P.cz)) < wide.half - 2) { const q = groundOf(world, P, H, x, z); return q.g + q.snow; }
+    return baseGround(world, x, z) + 0.4;
+  };
+  if (P.pond) pond(M, O, P.pond);
+  const v = vantages(P, O, view, groundY, world);
+  views = v.views;
+  const R = mulberry(world.json.seed ^ 0x7ee5);
+  const t = scatterTrees(M, R, P, H, O, groundY, wide.half + 220);
+  // tall bare trees on the hill in front of the valley camera, down its left side, as in the Hunters
+  const hx = v.hill.x, hz = v.hill.z, dx = P.cx - hx, dz = P.cz - hz, dl = Math.hypot(dx, dz), ux = dx / dl, uz = dz / dl;
+  let feat = 0;
+  for (let k = 0; k < 6; k++) {
+    const along = 16 + k * 9 + R() * 4, side = -(9 + k * 3.5 + R() * 3), x = hx + ux * along - uz * side, z = hz + uz * along + ux * side;
+    if (!t.clear(x, z)) continue;
+    bareTree(M, R, x - O[0], groundY(x, z) - O[1], z - O[2], 14 + 6 * R()); feat++;
+  }
+  const pd = P.pond ? "r " + P.pond.r + " m at " + P.pond.x.toFixed(0) + ", " + P.pond.z.toFixed(0) : "none";
+  log("land: pond " + pd + ", " + t.bare + " bare trees, " + t.spruce + " spruce, " + feat + " on the hill; " + M.triangles + " triangles");
+}
 
 // cameras: the viewpoint at eye height; a closer one by the nearest lit door on the right; a walk
 const g = (x, z) => { const q = groundOf(world, site.plan, site.plan.houses, x, z); return q.g + q.snow; };
@@ -42,12 +77,12 @@ if (door) {
 cams.walk = []; for (let k = 0; k < 96; k++) { const d = k * 0.045; cams.walk.push(cam(view.x + fx * d, view.z + fz * d, view.eye + 0.025 * Math.sin(k / 96 * Math.PI * 4), view.yaw + 0.04 * Math.sin(k / 96 * Math.PI), view.pitch, 68)); }
 
 await mkdir(outDir, { recursive: true });
-const glb = writeGlb(M, { snow: [0.9, 0.92, 0.95], ground: [0.85, 0.87, 0.9], boards: [0.08, 0.06, 0.05], cedar: [0.4, 0.25, 0.12], timber: [0.25, 0.2, 0.15], stone: [0.3, 0.3, 0.3], shingle: [0.25, 0.25, 0.27], iron: [0.1, 0.1, 0.1], ice: [0.7, 0.8, 0.85], glass: [0.05, 0.05, 0.05], lamp: [1, 0.8, 0.5], sign: [0.6, 0.2, 0.1] },
-  { seed: world.json.seed, view: want, origin: O });
-await writeFile(join(outDir, `${want}.glb`), glb);
-const frame = { format: "lw-hero-frame-1", seed: world.json.seed, view: want, origin: O, clock: view.clock, day: view.day, cameras: cams,
+const glb = writeGlb(M, { snow: [0.9, 0.92, 0.95], ground: [0.85, 0.87, 0.9], boards: [0.08, 0.06, 0.05], cedar: [0.4, 0.25, 0.12], timber: [0.25, 0.2, 0.15], stone: [0.3, 0.3, 0.3], shingle: [0.25, 0.25, 0.27], iron: [0.1, 0.1, 0.1], ice: [0.7, 0.8, 0.85], glass: [0.05, 0.05, 0.05], lamp: [1, 0.8, 0.5], sign: [0.6, 0.2, 0.1], bark: [0.18, 0.15, 0.13], needles: [0.05, 0.08, 0.06] },
+  { seed: world.json.seed, view: outName, origin: O });
+await writeFile(join(outDir, `${outName}.glb`), glb);
+const frame = { format: "lw-hero-frame-1", seed: world.json.seed, view: outName, origin: O, clock: view.clock, day: view.day, cameras: cams, ...(views ? { views } : {}),
   lights: L.map((l) => ({ p: l.p.map((v) => +v.toFixed(4)), col: l.col, power: l.power, radius: l.radius, ...(l.aim ? { aim: l.aim, cone: l.cone } : {}), ...(l.street ? { street: true } : {}) })),
   smoke: smoke.map((c) => c.map((v) => +v.toFixed(3))),
   counts: { triangles: M.triangles, lights: L.length, houses, materials: [...M.b.keys()] } };
-await writeFile(join(outDir, `${want}.frame.json`), JSON.stringify(frame));
-log(`wrote ${want}.glb (${(glb.length / 1e6).toFixed(1)} MB) and ${want}.frame.json`);
+await writeFile(join(outDir, `${outName}.frame.json`), JSON.stringify(frame));
+log(`wrote ${outName}.glb (${(glb.length / 1e6).toFixed(1)} MB) and ${outName}.frame.json`);

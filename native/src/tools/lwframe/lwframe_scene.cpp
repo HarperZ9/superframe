@@ -48,6 +48,11 @@ std::vector<MaterialSpec> materialSpecs(const std::string& r){
     auto ice = acg(r, "ice", "Ice002", 1.0f, 4, false); v.push_back(ice);
     auto plaster = acg(r, "plaster", "Plaster007", 2.0f, 0); plaster.heightScale = 0.004f; plaster.tint[0] = 0.92f; plaster.tint[1] = 0.88f; plaster.tint[2] = 0.8f; v.push_back(plaster);
     auto bark = ph(r, "bark", "medieval_wood", 0.8f); bark.tint[0] = 0.45f; bark.tint[1] = 0.36f; bark.tint[2] = 0.3f; bark.roughBias = 0.15f; v.push_back(bark);
+    // spruce needles at a distance: the forest-floor scan darkened to a cold green, rough, no relief
+    auto needles = acg(r, "needles", "Ground054", 1.2f, 0); needles.tint[0] = 0.16f; needles.tint[1] = 0.24f; needles.tint[2] = 0.18f; needles.roughBias = 0.2f; v.push_back(needles);
+    // the works (region 8): banded stack paint, and still water
+    auto red = acg(r, "paint_red", "Plaster007", 2.0f, 0); red.tint[0] = 0.62f; red.tint[1] = 0.1f; red.tint[2] = 0.07f; v.push_back(red);
+    MaterialSpec water; water.name = "water"; water.kind = 12; v.push_back(water);
     MaterialSpec logend; logend.name = "logend"; logend.kind = 7; v.push_back(logend);
     MaterialSpec glass; glass.name = "glass"; glass.kind = 3; v.push_back(glass);
     MaterialSpec lamp; lamp.name = "lamp"; lamp.kind = 5; v.push_back(lamp);
@@ -103,6 +108,7 @@ bool loadScene(const std::string& glbPath, const std::string& framePath, const s
         cams.main = cam(*cs->get("main"));
         if (const assets::Json* c = cs->get("close")){ cams.close = cam(*c); cams.hasClose = true; }
         if (const assets::Json* w = cs->get("walk")) for (const assets::Json& c : w->a) cams.walk.push_back(cam(c));
+        if (const assets::Json* vs = j.get("views")) for (const auto& [k, c] : vs->o) cams.views[k] = cam(c);
     } catch (const std::exception& e){ err = std::string("lwframe: ") + e.what(); return false; }
     // materials and their textures
     if (!cookMaterials(specs, S.textures, err)) return false;

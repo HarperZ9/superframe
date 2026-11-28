@@ -69,7 +69,8 @@ void main(uint3 id : SV_DispatchThreadID) {
     const float3 mt = B[0] * m.x + B[1] * m.y + B[2] * m.z;
     float3 d = reflect(-v, mt);
     if (dot(d, s.ng) <= 0.0f) d = reflect(d, s.ng);
-    const Hit hh = trace(offsetRay(s.p, s.ng), d, 600.0f);
+    // far enough for water to double a shore a kilometre off
+    const Hit hh = trace(offsetRay(s.p, s.ng), d, 1500.0f);
     rfRaw[id.xy] = float4(radianceAt(hh, d, r, true), hh.t);
 #endif
 }

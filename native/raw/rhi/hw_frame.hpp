@@ -75,6 +75,20 @@ struct FrameOptions {
     float time{0};                // seconds, for the falling snow
     uint32_t debugView{0};        // 0 the frame; 1 GI irradiance, 2 direct irradiance, 3 albedo (each before the tone map)
     bool skinSss{true};           // the screen-space subsurface blur on skin (raster) and the random walk (reference)
+    // The look: weather, sky and grade, so one scene gives many versions of the same place.
+    float fogDensity{0.012f}, fogFalloff{0.08f}, fogG{0.55f}, fogMax{220.0f};   // haze at the street (1/m), height falloff (1/m), anisotropy, froxel reach (m)
+    float skyScale{0.3f}, moonScale{1.0f};                                       // the night sky map and the moon disc
+    float snowSpeed{1.1f}, windX{0.35f}, windZ{0.15f};                           // falling snow, m/s
+    uint32_t snowFlakes{140000};
+    float whiteBalance[3]{0.9f, 0.97f, 1.12f};                                   // per channel gain before the tone map
+    float saturation{1.0f}, contrast{1.0f}, vignette{0.0f};                      // after the tone map, about mid grey
+    float lift[3]{0, 0, 0};                                                      // added to the shadows after the tone map
+    // A camera mode over the physical frame: 0 none, 1 tilt-shift miniature, 2 oil (anisotropic
+    // Kuwahara), 3 oil and ink (oil with dark contour lines from the luma gradient).
+    uint32_t lens{0};
+    float skyTurn{0.0f};       // radians: turns the sky and its moon or sun about up (to put a low sun ahead of a camera)
+    float fogAmbient{0.15f};   // the sky's share in the haze's in-scatter: night tuned low (lamps lead); about 1 by day, when the whole sky lights the haze
+    float lensFocus{0.55f}, lensBand{0.1f}, lensStrength{1.0f};                  // tilt: focus row (0 top, 1 bottom), sharp half band; strength scales blur or brush
 };
 struct PassTime { std::string name; double ms; };
 struct FrameResult {

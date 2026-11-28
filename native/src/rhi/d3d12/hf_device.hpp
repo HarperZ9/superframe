@@ -27,6 +27,9 @@ struct FrameCB {
     uint32_t counts[4];
     float timeParams[4], fwd[4];
     uint32_t dbg[4];
+    float grade0[4], grade1[4], grade2[4];   // white balance rgb, saturation; lift rgb, contrast; vignette, lens focus, band, strength
+    uint32_t lens[4];                        // x: lens mode
+    float look[4];                           // x: the sky's share in the haze's in-scatter
 };
 
 struct Ctx {
@@ -55,6 +58,7 @@ struct Ctx {
     Target depth;
     ComPtr<ID3D12Resource> cb, readHdr, readLdr;
     uint32_t w{0}, h{0};
+    uint32_t snowFlakes{140000};
     uint64_t texBytes{0}, targetBytes{0}, blasBytes{0}, tlasBytes{0};
     double buildMs{0};
 

@@ -9,7 +9,8 @@
 namespace raw::assets {
 namespace {
 constexpr std::int64_t kMaxElements = std::int64_t(1) << 26;      // per accessor
-constexpr std::int64_t kMaxBytes = std::int64_t(1) << 30;
+// the GLB container's own bound: its length fields are 32-bit (a whole town and its land passes 1 GiB)
+constexpr std::int64_t kMaxBytes = (std::int64_t(1) << 32) - 1;
 constexpr int kMaxNodeDepth = 128;
 
 [[noreturn]] void fail(const std::string& m){ throw AssetError("glTF: " + m); }

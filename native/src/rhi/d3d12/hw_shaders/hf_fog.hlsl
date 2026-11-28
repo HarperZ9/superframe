@@ -22,7 +22,10 @@ void main(uint3 id : SV_DispatchThreadID) {
     const float3 jit = float3(rnd(r), rnd(r), rnd(r));   // jittered in all three, then blended over frames
     const float3 p = froxelWorld(float3(id) + jit), vdir = normalize(p - F.eye.xyz);
     const float sigma = density(p);
-    float3 Lin = sky(float3(0, 1, 0)) * 0.6f / (4.0f * PI) * 4.0f * PI * 0.25f;
+    // the sky's light on the haze: the zenith and four directions twenty degrees up, scaled by the look
+    // (0.15 at night, where the lamps lead; about 1 by day, when the whole sky lights the haze)
+    const float3 skyAvg = (sky(float3(0, 1, 0)) + sky(float3(0.94f, 0.34f, 0)) + sky(float3(-0.94f, 0.34f, 0)) + sky(float3(0, 0.34f, 0.94f)) + sky(float3(0, 0.34f, -0.94f))) * 0.2f;
+    float3 Lin = F.look.x == 0.15f ? sky(float3(0, 1, 0)) * 0.15f : skyAvg * F.look.x;
     // the moon
     {
         const float3 l = coneDir(F.moonDir.xyz, 0.99996f, rnd2(r));
